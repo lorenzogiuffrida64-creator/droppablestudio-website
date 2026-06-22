@@ -18,7 +18,7 @@ export const REELS_VERSION = 4;
 export type WorkItem = {
   ph: 1 | 2 | 3 | 4 | 5 | 6; // placeholder gradient if a video is ever missing
   brand: string; // top-left chip
-  category: string; // industry — shown in the reel lightbox
+  category: string; // industry — metadata for the reel
   adId: string; // bottom-left chip
   duration: string; // bottom-right chip
   platform: string; // distribution channel

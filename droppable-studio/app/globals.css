@@ -193,8 +193,6 @@ section{position:relative}
 .reel{
   /* spacing baked into the card (not a track gap) so the -50% wrap is seamless */
   margin-right:22px;flex:0 0 auto;
-  appearance:none;-webkit-appearance:none;border:0;background:none;
-  font:inherit;color:inherit;text-align:left;padding:0;cursor:pointer;
   display:block;
   width:clamp(214px,21vw,288px);
 }
@@ -230,41 +228,6 @@ section{position:relative}
   70%,100%{box-shadow:0 0 0 7px rgba(61,220,132,0)}
 }
 
-/* ---------- lightbox (native aspect-ratio reel player) ---------- */
-.lightbox{
-  position:fixed;inset:0;z-index:80;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(27,44,64,.88);backdrop-filter:blur(12px);
-  padding:clamp(16px,4vmin,48px);
-  animation:lb-in .35s var(--ease);
-}
-@keyframes lb-in{from{opacity:0}to{opacity:1}}
-.lightbox-body{margin:0;display:flex;flex-direction:column;gap:14px;min-width:0;max-height:100%;align-items:center}
-.lightbox-body video{
-  display:block;max-width:min(1100px,92vw);max-height:calc(100svh - 170px);
-  width:auto;height:auto;border-radius:14px;
-  border:1px solid var(--line-light);
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.6);
-  background:var(--blu-ink);
-}
-.lightbox-body figcaption{
-  display:flex;align-items:baseline;gap:14px;
-  font-family:var(--font-secondary);font-style:italic;font-size:24px;color:var(--sage-bright);
-}
-.lightbox-body figcaption small{
-  font-family:var(--font-primary);font-style:normal;font-weight:700;
-  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-light);
-}
-.lightbox-close{
-  position:absolute;top:22px;right:clamp(20px,4vw,40px);
-  appearance:none;border:1px solid var(--line-light);border-radius:999px;
-  background:rgba(27,44,64,.45);backdrop-filter:blur(6px);color:var(--sage-bright);
-  font-family:var(--font-primary);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-  padding:10px 18px;cursor:pointer;transition:background .3s,color .3s;
-}
-.lightbox-close:hover{background:var(--sage);color:var(--blu-ink)}
-.lightbox :focus-visible{outline-color:var(--sage)}
-@media (prefers-reduced-motion: reduce){.lightbox{animation:none}}
 .work-note{
   margin-top:86px;text-align:center;
   font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light);
@@ -677,6 +640,12 @@ footer :focus-visible{outline-color:var(--sage)}
   .brand{gap:9px;font-size:12px;letter-spacing:.08em}
   .brand img{height:26px}
   .nav .btn{padding:9px 15px;font-size:10px;letter-spacing:.1em}
+
+  /* buttons: consistent, well-proportioned tap targets across the page */
+  .btn{padding:16px 28px;font-size:11.5px}
+  /* in-card CTAs go full-width + centred so the free/Skool pair reads balanced
+     (was: ragged left-aligned pills of mismatched widths) */
+  .path-card .btn{width:100%;justify-content:center;align-self:stretch}
 
   /* tighter vertical rhythm — the desktop clamps leave sections stranded on phones */
   .hero{padding-top:104px;padding-bottom:28px}

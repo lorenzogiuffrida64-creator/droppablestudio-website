@@ -2,20 +2,12 @@ import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 type WorkTileProps = {
   item: WorkItem;
-  hidden?: boolean; // the loop's duplicate copy — hidden from a11y, not focusable
-  onOpen: (item: WorkItem) => void;
+  hidden?: boolean; // the loop's duplicate copy — hidden from a11y
 };
 
-export default function WorkTile({ item, hidden, onOpen }: WorkTileProps) {
+export default function WorkTile({ item, hidden }: WorkTileProps) {
   return (
-    <button
-      type="button"
-      className="reel"
-      aria-hidden={hidden || undefined}
-      tabIndex={hidden ? -1 : undefined}
-      onClick={() => onOpen(item)}
-      aria-label={`Play reel: ${item.brand} — ${item.category}`}
-    >
+    <div className="reel" aria-hidden={hidden || undefined}>
       <span className="reel-frame">
         {item.video ? (
           <video
@@ -35,6 +27,6 @@ export default function WorkTile({ item, hidden, onOpen }: WorkTileProps) {
           Live
         </span>
       </span>
-    </button>
+    </div>
   );
 }
