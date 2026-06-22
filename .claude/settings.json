@@ -44,7 +44,14 @@
       "Bash(gh auth *)",
       "Bash(grep -v '^$')",
       "Bash(git config *)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(git diff *)",
+      "Bash(xargs -0 du -ch)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ],
     "additionalDirectories": [
       "/Users/lollo/Library/Caches/ms-playwright-mcp/mcp-chrome-6127ba8"
