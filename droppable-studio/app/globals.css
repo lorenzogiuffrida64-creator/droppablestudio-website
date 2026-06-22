@@ -366,6 +366,7 @@ section{position:relative}
 .paths{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .path-card{
   position:relative;
+  min-width:0; /* allow grid items to shrink to their column (no blowout on mobile) */
   border:1px solid var(--line);border-radius:18px;padding:38px 36px 40px;
   display:flex;flex-direction:column;gap:18px;background:rgba(207,215,199,.55);
   transition:transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s;
@@ -671,10 +672,51 @@ footer :focus-visible{outline-color:var(--sage)}
   .foot-hero{margin:54px 0 46px}
 }
 @media (max-width:640px){
+  /* nav: keep logo + wordmark + CTA on one line without colliding/overflowing */
+  .nav{padding:14px var(--pad)}
+  .brand{gap:9px;font-size:12px;letter-spacing:.08em}
+  .brand img{height:26px}
+  .nav .btn{padding:9px 15px;font-size:10px;letter-spacing:.1em}
+
+  /* tighter vertical rhythm — the desktop clamps leave sections stranded on phones */
+  .hero{padding-top:104px;padding-bottom:28px}
+  .hero h1{margin:20px auto 22px}
+  .hero-cta{margin-top:30px}
+
+  .manifesto{padding:80px 0}
+  .manifesto-grid{gap:22px}
+
+  .work{padding:78px 0 28px}
+  .work-head{margin-bottom:40px;gap:14px}
+  .work-note{margin-top:52px}
+
+  .why{padding:80px 0 90px}
+  .why-head{margin-bottom:24px}
+  .ledger{margin-top:40px}
+  .row{padding:30px 0}
+
+  .cta{padding:104px 0}
+  .cta p{margin-bottom:34px}
+  .cta-reassure{margin-top:34px}
+
+  .academy{padding-bottom:96px}
+  .academy-panel{padding:36px 22px 40px}
+  .academy-head{margin-bottom:38px}
+  .paths{gap:18px}
+  .path-card{padding:30px 24px 32px}
+
+  /* under-construction ribbon: scaled + centred so it never overruns the card or viewport */
+  .uc-banner{left:50%;right:auto;top:-13px;transform:translateX(-50%) rotate(-4deg);padding:6px 13px}
+  .uc-banner-label{font-size:8.5px;letter-spacing:.13em}
+
   .reel{width:min(66vw,260px)}
   .hero-foot .loc{display:none}
   .foot-cols{gap:34px}
   .foot-hero{margin:44px 0 38px;gap:12px}
+}
+/* smallest phones: drop the wordmark to the mark alone so the CTA always fits */
+@media (max-width:374px){
+  .brand-name{display:none}
 }
 
 /* ---------- reduced motion ---------- */

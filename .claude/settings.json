@@ -76,7 +76,10 @@
       "Bash(rm -f static-marquee.png)",
       "Bash(curl -sS -I https://droppablestudio.com --max-time 20)",
       "Bash(curl -sS -I https://www.droppablestudio.com --max-time 20)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(rm -f before-1-hero.png before-why.png before-cta.png before-academy.png before-skool.png after-1-hero.png after-skool.png after-ribbon.png after-cta.png after-manifesto.png after-why.png after-360-nav.png)",
+      "Bash(git checkout *)",
+      "Bash(git --no-pager diff droppable-studio/components/Nav.tsx droppable-studio/app/globals.css)"
     ],
     "additionalDirectories": [
       "/Users/lollo/Library/Caches/ms-playwright-mcp/mcp-chrome-6127ba8"

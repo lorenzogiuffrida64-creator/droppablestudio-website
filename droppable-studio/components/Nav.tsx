@@ -18,7 +18,7 @@ export default function Nav() {
     <header className={`nav${scrolled ? " scrolled" : ""}`} id="nav">
       <a href="#top" className="brand">
         <img src="/logo-blue.png" alt="Droppable Studio logo" />
-        Droppable&nbsp;Studio
+        <span className="brand-name">Droppable&nbsp;Studio</span>
       </a>
       <nav className="nav-links" aria-label="Main">
         <a href="#work">Work</a>
