@@ -4,7 +4,7 @@ import Marquee from "@/components/Marquee";
 import Manifesto from "@/components/Manifesto";
 import WorkGrid from "@/components/WorkGrid";
 import WhyLedger from "@/components/WhyLedger";
-import Testimonials from "@/components/Testimonials";
+// import Testimonials from "@/components/Testimonials"; // hidden for now
 import InquiryCta from "@/components/InquiryCta";
 import Academy from "@/components/Academy";
 import Footer from "@/components/Footer";
@@ -22,7 +22,7 @@ export default function Home() {
       <div className="dark">
         <WorkGrid />
         <WhyLedger />
-        <Testimonials />
+        {/* <Testimonials /> hidden for now */}
       </div>
 
       <InquiryCta />

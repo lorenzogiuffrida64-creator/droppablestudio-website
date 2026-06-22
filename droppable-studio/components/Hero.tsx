@@ -82,16 +82,12 @@ export default function Hero() {
         </h1>
         <p className="rv d2">
           Droppable Studio crafts cinematic, AI campaigns for
-          skincare, fashion, real estate, music and global brands — produced in
-          days, at a fraction of traditional cost.
+          skincare, fashion, real estate, music and global brands.
         </p>
         <div className="hero-cta rv d3">
           <Link className="btn" href={LINKS.inquiry}>
             Start a project <span className="arr">→</span>
           </Link>
-          <a className="btn ghost" href="#work">
-            See the work
-          </a>
         </div>
       </div>
     </section>

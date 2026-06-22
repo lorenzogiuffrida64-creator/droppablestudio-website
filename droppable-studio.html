@@ -147,14 +147,18 @@ section{position:relative}
 .scroll-hint b{display:inline-block;width:1.5px;height:34px;background:var(--muted);animation:hint 2.2s var(--ease) infinite;transform-origin:top}
 @keyframes hint{0%{transform:scaleY(0)}45%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ---------- marquee ---------- */
-.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:18px 0;background:rgba(207,215,199,.65);backdrop-filter:blur(4px)}
-.marquee-track{display:flex;width:max-content;animation:slide 36s linear infinite}
-.marquee span{
-  font-weight:700;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
-  padding:0 34px;display:flex;align-items:center;gap:34px;white-space:nowrap;
+/* ---------- marquee (client logo wall) ---------- */
+.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:20px 0;background:rgba(207,215,199,.65);backdrop-filter:blur(4px)}
+.marquee-track{display:flex;align-items:center;width:max-content;animation:slide 44s linear infinite}
+/* each logo is forced to a flat single-tint blu silhouette via mask, so any
+   source logo reads as one on-brand style; uniform height + per-logo width */
+.marquee-logo{
+  flex:0 0 auto;height:26px;width:var(--logo-w,120px);margin:0 30px;
+  background-color:var(--blu);
+  -webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat;
+  opacity:.65;transition:opacity .3s ease;
 }
-.marquee span::after{content:"◆";font-size:7px;color:var(--blu)}
+.marquee-logo:hover{opacity:1}
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---------- manifesto ---------- */
@@ -171,8 +175,8 @@ section{position:relative}
 
 /* ---------- dark band (work + why AI) ---------- */
 .dark{background:var(--blu);color:var(--sage);position:relative;z-index:2}
-.dark::before{content:"";position:absolute;top:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:46px 46px 0 0}
-.dark::after{content:"";position:absolute;bottom:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0 0 46px 46px}
+.dark::before{content:"";position:absolute;top:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0}
+.dark::after{content:"";position:absolute;bottom:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0}
 
 /* ---------- work ---------- */
 .work{padding:clamp(90px,14vh,160px) 0 40px}
@@ -284,6 +288,7 @@ section{position:relative}
 .path-card:hover{transform:translateY(-5px);box-shadow:0 24px 50px -28px rgba(27,44,64,.4)}
 .path-card .tier{font-weight:700;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
 .path-card h3{font-family:var(--font-secondary);font-style:italic;font-weight:400;font-size:clamp(30px,3.2vw,40px);letter-spacing:-0.02em;color:var(--blu-ink)}
+.path-card .path-lede{color:var(--muted);font-size:14px;font-weight:600;letter-spacing:var(--track);margin:-2px 0 2px}
 .path-card ul{list-style:none;color:var(--muted);font-size:15px;font-weight:500;display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
 .path-card li{padding-left:22px;position:relative}
 .path-card li::before{content:"◆";position:absolute;left:0;top:1px;font-size:8px;color:var(--blu)}
@@ -359,11 +364,10 @@ footer{background:var(--blu-deep);color:var(--sage);padding:90px 0 36px;position
   <div class="wrap">
     <p class="eyebrow rv">AI marketing agency — worldwide</p>
     <h1 class="rv d1">We make the internet <em>stop scrolling.</em></h1>
-    <p class="rv d2">Droppable Studio crafts cinematic, AI-generated campaigns for skincare, fashion, real estate, music and global brands — produced in days, at a fraction of traditional cost.</p>
+    <p class="rv d2">Droppable Studio crafts cinematic, AI-generated campaigns for skincare, fashion, real estate, music and global brands.</p>
     <div class="hero-cta rv d3">
       <!-- ▼ REPLACE href WITH YOUR INQUIRY FORM URL ▼ -->
       <a class="btn" href="https://YOUR-INQUIRY-FORM-LINK.com" target="_blank" rel="noopener">Start a project <span class="arr">→</span></a>
-      <a class="btn ghost" href="#work">See the work</a>
     </div>
   </div>
   <div class="hero-foot">
@@ -373,10 +377,28 @@ footer{background:var(--blu-deep);color:var(--sage);padding:90px 0 36px;position
 </section>
 
 <!-- ================= MARQUEE ================= -->
-<div class="marquee" aria-hidden="true">
+<div class="marquee" aria-label="Brands we've worked with">
   <div class="marquee-track">
-    <span>Skincare</span><span>Fashion</span><span>Real Estate</span><span>Music Industry</span><span>Artists</span><span>Tech</span><span>Hospitality</span><span>E-Commerce</span>
-    <span>Skincare</span><span>Fashion</span><span>Real Estate</span><span>Music Industry</span><span>Artists</span><span>Tech</span><span>Hospitality</span><span>E-Commerce</span>
+    <!-- first copy: labelled for screen readers -->
+    <span class="marquee-logo" role="img" aria-label="InVideo"           style="--logo:url(droppable-studio/public/logos/invideo.svg);--logo-w:135px"></span>
+    <span class="marquee-logo" role="img" aria-label="House of Garments" style="--logo:url(droppable-studio/public/logos/houseofgarments.png);--logo-w:140px"></span>
+    <span class="marquee-logo" role="img" aria-label="Vemue"             style="--logo:url(droppable-studio/public/logos/vemueclo.png);--logo-w:66px"></span>
+    <span class="marquee-logo" role="img" aria-label="Blueprint"         style="--logo:url(droppable-studio/public/logos/blueprint.png);--logo-w:153px"></span>
+    <span class="marquee-logo" role="img" aria-label="Skygen"            style="--logo:url(droppable-studio/public/logos/skygen.svg);--logo-w:30px"></span>
+    <span class="marquee-logo" role="img" aria-label="Magnesium"         style="--logo:url(droppable-studio/public/logos/magnesium.svg);--logo-w:41px"></span>
+    <span class="marquee-logo" role="img" aria-label="Freelifeco"        style="--logo:url(droppable-studio/public/logos/freelifeco.png);--logo-w:40px"></span>
+    <span class="marquee-logo" role="img" aria-label="Looblet"           style="--logo:url(droppable-studio/public/logos/looblet.png);--logo-w:125px"></span>
+    <span class="marquee-logo" role="img" aria-label="Wearvybes"         style="--logo:url(droppable-studio/public/logos/wearvybes.png);--logo-w:28px"></span>
+    <!-- second copy doubled so the -50% slide loops seamlessly -->
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/invideo.svg);--logo-w:135px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/houseofgarments.png);--logo-w:140px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/vemueclo.png);--logo-w:66px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/blueprint.png);--logo-w:153px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/skygen.svg);--logo-w:30px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/magnesium.svg);--logo-w:41px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/freelifeco.png);--logo-w:40px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/looblet.png);--logo-w:125px"></span>
+    <span class="marquee-logo" aria-hidden="true" style="--logo:url(droppable-studio/public/logos/wearvybes.png);--logo-w:28px"></span>
   </div>
 </div>
 
@@ -388,7 +410,7 @@ footer{background:var(--blu-deep);color:var(--sage);padding:90px 0 36px;position
         <p class="eyebrow rv">01 / The studio</p>
         <p class="lede rv d1">Born in the feed, built for brands. We turn generative AI into ads people <b>actually watch.</b></p>
       </div>
-      <p class="manifesto-side rv d2">Every frame is directed, not generated at random. <strong>Concept, art direction, sound and edit</strong> — engineered by humans, rendered by AI, designed to convert. If it wouldn't stop our own scroll, it never leaves the studio.</p>
+      <p class="manifesto-side rv d2">Every frame is directed, not generated at random. <strong>Concept, art direction, sound and edit</strong>, engineered by humans, rendered by AI, designed to convert. If it wouldn't stop our own scroll, it never leaves the studio.</p>
     </div>
   </div>
 </section>
@@ -496,9 +518,9 @@ footer{background:var(--blu-deep);color:var(--sage);padding:90px 0 36px;position
           <span class="tier">Discord — <b>Free</b></span>
           <h3>The Community</h3>
           <ul>
-            <li>Weekly drops: prompts, tools &amp; breakdowns</li>
+            <li>Monthly drops: Claude Code guides, skills &amp; breakdowns</li>
             <li>Beginner roadmap to generative AI</li>
-            <li>Share your work, get feedback</li>
+            <li>Share your work, get feedback — a 400+ community</li>
           </ul>
           <!-- ▼ REPLACE href WITH YOUR DISCORD INVITE ▼ -->
           <a class="btn ghost" href="https://discord.gg/YOUR-INVITE" target="_blank" rel="noopener">Join free <span class="arr">→</span></a>
@@ -507,10 +529,13 @@ footer{background:var(--blu-deep);color:var(--sage);padding:90px 0 36px;position
         <div class="path-card featured rv d1">
           <span class="tier">Skool — <b>The full system</b></span>
           <h3>The Droppable Method</h3>
+          <p class="path-lede">From 0 to hero in generative AI.</p>
           <ul>
-            <li>Complete AI ad-creation curriculum, tool by tool</li>
-            <li>Agency playbook: pricing, clients, delivery</li>
-            <li>Live calls, reviews &amp; private network</li>
+            <li>Every prompt, tool &amp; render setting behind a real Droppable campaign</li>
+            <li>Weekly drops: Claude Code, AI tools &amp; insider secrets</li>
+            <li>Open your first AI marketing agency — scale it to $10k/mo</li>
+            <li>Weekly live workshops (meet the founders)</li>
+            <li>Private operator network</li>
           </ul>
           <!-- ▼ REPLACE href WITH YOUR SKOOL URL ▼ -->
           <a class="btn" href="https://www.skool.com/YOUR-COMMUNITY" target="_blank" rel="noopener">Enter the Academy <span class="arr">→</span></a>

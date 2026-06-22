@@ -36,3 +36,9 @@ yarn-error.log*
 
 # ── Vercel ────────────────────────────────────────────────────────────────────
 .vercel
+
+# ── Raw video masters ─────────────────────────────────────────────────────────
+# Source .mov/.mp4 the site does NOT serve (it uses droppable-studio/public/reels/
+# transcodes). Multi-GB, over GitHub's 100MB limit — kept local only, back up
+# outside git.
+Droppable-studio-video/

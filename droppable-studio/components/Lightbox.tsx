@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { WorkItem } from "@/config/work";
+import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 type LightboxProps = {
   item: WorkItem;
@@ -31,7 +31,7 @@ export default function Lightbox({ item, onClose }: LightboxProps) {
       className="lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label={`${item.title} — ${item.category}`}
+      aria-label={`${item.brand} — ${item.category}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -46,10 +46,10 @@ export default function Lightbox({ item, onClose }: LightboxProps) {
         Close ✕
       </button>
       <figure className="lightbox-body">
-        <video src={item.video} controls autoPlay playsInline />
+        <video src={`${item.video}?v=${REELS_VERSION}`} controls autoPlay playsInline />
         <figcaption>
           <small>{item.category}</small>
-          {item.title}
+          {item.brand}
         </figcaption>
       </figure>
     </div>

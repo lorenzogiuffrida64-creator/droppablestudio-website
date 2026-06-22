@@ -3,7 +3,6 @@ export default function WhyLedger() {
     <section className="why" id="why">
       <div className="wrap">
         <div className="why-head">
-          <p className="eyebrow rv">03 / Why AI</p>
           <h2 className="rv d1">
             Traditional production is <em>obsolete.</em>
           </h2>

@@ -1,52 +1,40 @@
-import { LINKS } from "@/config/links";
-import type { WorkItem } from "@/config/work";
+import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 type WorkTileProps = {
   item: WorkItem;
-  delay?: 1 | 2;
+  hidden?: boolean; // the loop's duplicate copy — hidden from a11y, not focusable
   onOpen: (item: WorkItem) => void;
 };
 
-export default function WorkTile({ item, delay, onOpen }: WorkTileProps) {
-  const cls = `tile rv${delay ? ` d${delay}` : ""}`;
-  const meta = (
-    <div className="tile-meta">
-      <div>
-        <small>{item.category}</small>
-        <h3>{item.title}</h3>
-      </div>
-      <span className="tile-view">
-        {item.video ? "Play reel" : "View campaign"}
-      </span>
-    </div>
-  );
-
-  if (item.video) {
-    return (
-      <button
-        type="button"
-        className={cls}
-        onClick={() => onOpen(item)}
-        aria-label={`Play reel: ${item.title} (${item.category})`}
-      >
-        {/* cover-cropped feed preview — full aspect ratio plays in the lightbox */}
-        <video
-          className="tile-media"
-          src={item.video}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
-        {meta}
-      </button>
-    );
-  }
-
+export default function WorkTile({ item, hidden, onOpen }: WorkTileProps) {
   return (
-    <a className={cls} href={LINKS.instagram} target="_blank" rel="noopener">
-      <div className={`tile-media ph ph-${item.ph}`}></div>
-      {meta}
-    </a>
+    <button
+      type="button"
+      className="reel"
+      aria-hidden={hidden || undefined}
+      tabIndex={hidden ? -1 : undefined}
+      onClick={() => onOpen(item)}
+      aria-label={`Play reel: ${item.brand} — ${item.category}`}
+    >
+      <span className="reel-frame">
+        {item.video ? (
+          <video
+            className="reel-media"
+            src={`${item.video}?v=${REELS_VERSION}`}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+          />
+        ) : (
+          <span className={`reel-media ph ph-${item.ph}`} aria-hidden="true" />
+        )}
+        <span className="reel-live">
+          <i aria-hidden="true" />
+          Live
+        </span>
+      </span>
+    </button>
   );
 }

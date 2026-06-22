@@ -159,7 +159,8 @@ export default function DropCanvas() {
 
   useEffect(() => {
     const inquiry = pathname === "/inquiry";
-    const hidden = pathname === "/preorder" || inquiry;
+    const hidden =
+      pathname === "/preorder" || pathname === "/preorder/success" || inquiry;
     hiddenRef.current = hidden;
     const canvas = canvasRef.current;
     if (canvas) canvas.style.display = hidden ? "none" : "";

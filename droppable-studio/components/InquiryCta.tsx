@@ -15,9 +15,6 @@ export default function InquiryCta() {
         <Link className="btn rv d3" href={LINKS.inquiry}>
           Complete the inquiry <span className="arr">→</span>
         </Link>
-        <p className="cta-reassure rv d4">
-          (No retainers required · NDA on request)
-        </p>
       </div>
     </section>
   );

@@ -9,7 +9,6 @@ export default function Academy() {
         <div className="academy-panel">
           <div className="academy-head">
             <div>
-              <p className="eyebrow rv">04 / The Academy</p>
               <h2 className="rv d1">Learn how we do it.</h2>
             </div>
             <p className="sub rv d2">
@@ -27,9 +26,9 @@ export default function Academy() {
               </span>
               <h3>The Community</h3>
               <ul>
-                <li>Weekly drops: prompts, tools &amp; breakdowns</li>
+                <li>Monthly drops: Claude Code guides, skills &amp; breakdowns</li>
                 <li>Beginner roadmap to generative AI</li>
-                <li>Share your work, get feedback</li>
+                <li>Share your work, get feedback — a 400+ community</li>
               </ul>
               <a
                 className="btn ghost"
@@ -51,10 +50,13 @@ export default function Academy() {
                 Skool — <b>The full system</b>
               </span>
               <h3>The Droppable Method</h3>
+              <p className="path-lede">From 0 to hero in generative AI.</p>
               <ul>
-                <li>Complete AI ad-creation curriculum, tool by tool</li>
-                <li>Agency playbook: pricing, clients, delivery</li>
-                <li>Live calls, reviews &amp; private network</li>
+                <li>Every prompt, tool &amp; render setting behind a real Droppable campaign</li>
+                <li>Weekly drops: Claude Code, AI tools &amp; insider secrets</li>
+                <li>Open your first AI marketing agency — scale it to $10k/mo</li>
+                <li>Weekly live workshops (meet the founders)</li>
+                <li>Private operator network</li>
               </ul>
               <p className="preorder-price">
                 <span className="was">{PREORDER_DISPLAY.launch}</span>

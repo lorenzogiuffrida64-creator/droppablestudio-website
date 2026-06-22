@@ -1,23 +1,33 @@
-const INDUSTRIES = [
-  "Skincare",
-  "Fashion",
-  "Real Estate",
-  "Music Industry",
-  "Artists",
-  "Tech",
-  "Hospitality",
-  "E-Commerce",
-];
+import type { CSSProperties } from "react";
+import { CLIENTS } from "@/config/clients";
 
 export default function Marquee() {
+  if (CLIENTS.length === 0) return null;
+
   return (
-    <div className="marquee" aria-hidden="true">
+    <section className="marquee" aria-label="Brands we've worked with">
       <div className="marquee-track">
         {/* list doubled so the -50% slide loops seamlessly */}
-        {[...INDUSTRIES, ...INDUSTRIES].map((name, i) => (
-          <span key={i}>{name}</span>
-        ))}
+        {[...CLIENTS, ...CLIENTS].map((c, i) => {
+          const isDuplicate = i >= CLIENTS.length;
+          return (
+            <span
+              key={i}
+              className="marquee-logo"
+              style={
+                {
+                  "--logo": `url(${c.logo})`,
+                  ...(c.width ? { "--logo-w": `${c.width}px` } : {}),
+                } as CSSProperties
+              }
+              // expose names once; the duplicate copy is decorative
+              {...(isDuplicate
+                ? { "aria-hidden": true }
+                : { role: "img", "aria-label": c.name })}
+            />
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }
