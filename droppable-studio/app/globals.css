@@ -160,7 +160,7 @@ section{position:relative}
 @keyframes slide{to{transform:translateX(-50%)}}
 
 /* ---------- manifesto ---------- */
-.manifesto{padding:clamp(110px,16vh,190px) 0}
+.manifesto{padding:clamp(150px,20vh,250px) 0}
 .manifesto .lede{
   font-family:var(--font-secondary);font-style:italic;font-weight:400;
   font-size:clamp(32px,4.6vw,58px);line-height:1.14;letter-spacing:-0.02em;
@@ -177,7 +177,7 @@ section{position:relative}
 .dark::after{content:"";position:absolute;bottom:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0}
 
 /* ---------- work ---------- */
-.work{padding:clamp(90px,14vh,160px) 0 40px}
+.work{padding:clamp(130px,18vh,210px) 0 40px}
 .work-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;margin-bottom:64px}
 .work h2, .why h2, .cta h2, .academy h2, .testi-section h2{
   font-family:var(--font-primary);font-weight:500;
@@ -246,7 +246,7 @@ section{position:relative}
 .ph-6{background:radial-gradient(130% 100% at 30% 0%, #C5CFC0, #5A7390 55%, #18293E)}
 
 /* ---------- why AI ledger ---------- */
-.why{padding:clamp(110px,16vh,190px) 0 clamp(120px,16vh,200px)}
+.why{padding:clamp(150px,20vh,250px) 0 clamp(160px,20vh,260px)}
 .why-head{max-width:820px;margin:0 auto 30px;text-align:center}
 .why h2{color:var(--sage-bright)}
 .why h2 em{font-weight:400;color:var(--sage)}
@@ -265,7 +265,7 @@ section{position:relative}
 .row .metric span{font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light)}
 
 /* ---------- testimonials (looping carousel) ---------- */
-.testi-section{padding:clamp(20px,4vh,56px) 0 clamp(110px,15vh,190px)}
+.testi-section{padding:clamp(40px,6vh,80px) 0 clamp(150px,19vh,250px)}
 .testi-head{max-width:820px;margin:0 auto clamp(44px,6vh,72px);text-align:center}
 .testi-head h2{margin-top:22px}
 .testi-head .eyebrow{justify-content:center}
@@ -307,7 +307,7 @@ section{position:relative}
 .testi-cite b{color:var(--blu-ink);font-weight:700}
 
 /* ---------- CTA (inquiry) ---------- */
-.cta{padding:clamp(150px,22vh,260px) 0;text-align:center}
+.cta{padding:clamp(200px,26vh,330px) 0;text-align:center}
 .cta h2{max-width:15ch;margin:26px auto 22px;color:var(--blu-ink)}
 .cta h2 em{font-weight:500;color:var(--blu)}
 .cta p{color:var(--muted);max-width:42ch;margin:0 auto 44px;font-weight:500}
@@ -316,7 +316,7 @@ section{position:relative}
 .cta-reassure{margin-top:48px;font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- academy ---------- */
-.academy{padding:0 0 clamp(120px,16vh,200px)}
+.academy{padding:0 0 clamp(160px,20vh,260px)}
 .academy-panel{
   border:1px solid var(--line);border-radius:26px;
   padding:clamp(44px,6vw,90px);
@@ -652,23 +652,23 @@ footer :focus-visible{outline-color:var(--sage)}
   .hero h1{margin:20px auto 22px}
   .hero-cta{margin-top:30px}
 
-  .manifesto{padding:80px 0}
+  .manifesto{padding:110px 0}
   .manifesto-grid{gap:22px}
 
-  .work{padding:78px 0 28px}
+  .work{padding:104px 0 28px}
   .work-head{margin-bottom:40px;gap:14px}
   .work-note{margin-top:52px}
 
-  .why{padding:80px 0 90px}
+  .why{padding:110px 0 120px}
   .why-head{margin-bottom:24px}
   .ledger{margin-top:40px}
   .row{padding:30px 0}
 
-  .cta{padding:104px 0}
+  .cta{padding:140px 0}
   .cta p{margin-bottom:34px}
   .cta-reassure{margin-top:34px}
 
-  .academy{padding-bottom:96px}
+  .academy{padding-bottom:128px}
   .academy-panel{padding:36px 22px 40px}
   .academy-head{margin-bottom:38px}
   .paths{gap:18px}

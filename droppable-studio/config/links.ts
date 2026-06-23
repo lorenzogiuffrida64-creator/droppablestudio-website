@@ -11,5 +11,4 @@ export const LINKS = {
   preorder: "/preorder",
   discord: "https://discord.gg/rs5eATyJ7W",
   skool: "https://www.skool.com/droppablestudio-ai-school-7941/about",
-  tiktok: "https://tiktok.com/@droppablestudio",
 } as const;
