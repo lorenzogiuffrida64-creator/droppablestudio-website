@@ -3,39 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { PREORDER_DISPLAY } from "@/config/preorder";
-
-/* dialing codes — mirrors components/InquiryForm.tsx (Italy first). Code-only
-   labels keep the narrow selector clean. */
-const COUNTRY_CODES = [
-  { code: "+39", n: "Italy" },
-  { code: "+1", n: "United States / Canada" },
-  { code: "+44", n: "United Kingdom" },
-  { code: "+33", n: "France" },
-  { code: "+49", n: "Germany" },
-  { code: "+34", n: "Spain" },
-  { code: "+41", n: "Switzerland" },
-  { code: "+31", n: "Netherlands" },
-  { code: "+351", n: "Portugal" },
-  { code: "+32", n: "Belgium" },
-  { code: "+43", n: "Austria" },
-  { code: "+353", n: "Ireland" },
-  { code: "+45", n: "Denmark" },
-  { code: "+46", n: "Sweden" },
-  { code: "+47", n: "Norway" },
-  { code: "+971", n: "United Arab Emirates" },
-  { code: "+966", n: "Saudi Arabia" },
-  { code: "+974", n: "Qatar" },
-  { code: "+65", n: "Singapore" },
-  { code: "+852", n: "Hong Kong" },
-  { code: "+61", n: "Australia" },
-  { code: "+81", n: "Japan" },
-  { code: "+82", n: "South Korea" },
-  { code: "+91", n: "India" },
-  { code: "+55", n: "Brazil" },
-  { code: "+52", n: "Mexico" },
-  { code: "+90", n: "Turkey" },
-  { code: "+27", n: "South Africa" },
-];
+import { COUNTRY_CODES } from "@/config/countryCodes";
 
 type Fields = {
   firstName: string;
