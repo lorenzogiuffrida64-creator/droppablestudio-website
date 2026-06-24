@@ -469,6 +469,7 @@ footer :focus-visible{outline-color:var(--sage)}
 .inq-answer{display:flex;flex-direction:column;gap:9px}
 .inq-answer .field-bare input,.inq-answer .field-bare textarea{font-size:19px}
 .inq-answer .seg{flex-wrap:wrap}
+.inq-other{margin-top:8px;max-width:360px;animation:inq-step-in .35s var(--ease) both}
 .inq-contact{display:grid;grid-template-columns:1fr 1fr;gap:26px 24px}
 
 /* navigation */

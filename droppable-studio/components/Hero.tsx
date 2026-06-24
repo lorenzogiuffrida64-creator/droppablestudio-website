@@ -88,6 +88,9 @@ export default function Hero() {
           <Link className="btn" href={LINKS.inquiry}>
             Start a project <span className="arr">→</span>
           </Link>
+          <a className="btn ghost" href="#academy">
+            AI school <span className="arr">→</span>
+          </a>
         </div>
       </div>
     </section>

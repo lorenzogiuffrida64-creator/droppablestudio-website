@@ -191,6 +191,11 @@ export default function InquiryForm() {
   const current = STEPS[step];
   const isLast = step === total - 1;
 
+  /* a "choice" whose selected option is "Other" reveals a free-text field so
+     the visitor can name what "Other" is (only the Industry step has it today) */
+  const showOther =
+    current.kind === "choice" && answers[current.name] === "Other";
+
   const stepRef = useRef<HTMLDivElement>(null);
 
   /* move focus into each new screen so keyboard + screen-reader users land
@@ -201,6 +206,15 @@ export default function InquiryForm() {
     );
     el?.focus();
   }, [step]);
+
+  /* when "Other" is picked, drop focus straight into the specify field */
+  useEffect(() => {
+    if (showOther) {
+      stepRef.current
+        ?.querySelector<HTMLInputElement>(".inq-other input")
+        ?.focus();
+    }
+  }, [showOther]);
 
   const set = (name: string, value: string) =>
     setAnswers((a) => ({ ...a, [name]: value }));
@@ -214,6 +228,14 @@ export default function InquiryForm() {
       }
       const email = (answers["Email"] ?? "").trim();
       if (email && !isEmail(email)) e["Email"] = "Enter a valid email";
+    } else if (s.kind === "choice") {
+      if (s.required && !(answers[s.name] ?? "").trim()) e[s.name] = "Required";
+      if (
+        answers[s.name] === "Other" &&
+        !(answers[`${s.name} — other`] ?? "").trim()
+      ) {
+        e[`${s.name} — other`] = "Please specify";
+      }
     } else if (s.required) {
       if (!(answers[s.name] ?? "").trim()) e[s.name] = "Required";
     }
@@ -244,6 +266,19 @@ export default function InquiryForm() {
     /* fold the country code into the single "Phone Number" value so the
        notification reads "Phone Number: +39 328 827 3008" */
     const payload: Answers = { ...answers };
+
+    /* fold any "Other" free-text into its choice value, then drop the helper
+       key — so the notification reads e.g. "Industry: Other — Pet care" */
+    for (const k of Object.keys(payload)) {
+      if (!k.endsWith(" — other")) continue;
+      const base = k.slice(0, -" — other".length);
+      const detail = (payload[k] ?? "").toString().trim();
+      if (payload[base] === "Other" && detail) {
+        payload[base] = `Other — ${detail}`;
+      }
+      delete payload[k];
+    }
+
     const code = (payload["Phone Code"] ?? "").toString();
     const number = (payload["Phone Number"] ?? "").toString().trim();
     payload["Phone Number"] = `${code} ${number}`.trim();
@@ -377,6 +412,18 @@ export default function InquiryForm() {
                   </div>
                   {errors[current.name] && (
                     <span className="field-error">{errors[current.name]}</span>
+                  )}
+                  {answers[current.name] === "Other" && (
+                    <div className="inq-other">
+                      <TextControl
+                        name={`${current.name} — other`}
+                        value={answers[`${current.name} — other`] ?? ""}
+                        onChange={(v) => set(`${current.name} — other`, v)}
+                        placeholder="Tell us your industry"
+                        required
+                        error={errors[`${current.name} — other`]}
+                      />
+                    </div>
                   )}
                 </div>
               )}
