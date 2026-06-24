@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { PREORDER_DISPLAY } from "@/config/preorder";
-import { COUNTRY_CODES } from "@/config/countryCodes";
+import { isValidDialCode } from "@/config/countryCodes";
+import CountryCodeField from "@/components/CountryCodeField";
 
 type Fields = {
   firstName: string;
@@ -44,6 +45,7 @@ export default function PreorderForm() {
     if (!f.lastName.trim()) e.lastName = "Required";
     if (!f.email.trim()) e.email = "Required";
     else if (!isEmail(f.email.trim())) e.email = "Enter a valid email";
+    if (!isValidDialCode(f.phoneCode)) e.phoneCode = "Add your country code";
     if (!f.phone.trim()) e.phone = "Required";
     return e;
   }
@@ -182,7 +184,11 @@ export default function PreorderForm() {
                 )}
               </div>
 
-              <div className={`field full${errors.phone ? " invalid" : ""}`}>
+              <div
+                className={`field full${
+                  errors.phone || errors.phoneCode ? " invalid" : ""
+                }`}
+              >
                 <label htmlFor="phone">
                   Phone Number
                   <span className="req" aria-hidden="true">
@@ -190,18 +196,12 @@ export default function PreorderForm() {
                   </span>
                 </label>
                 <div className="phone-row">
-                  <select
-                    name="phoneCode"
+                  <CountryCodeField
                     value={f.phoneCode}
-                    onChange={(e) => set("phoneCode", e.target.value)}
-                    aria-label="Country dialing code"
-                  >
-                    {COUNTRY_CODES.map((c) => (
-                      <option key={c.n} value={c.code} title={c.n}>
-                        {c.code}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(c) => set("phoneCode", c)}
+                    invalid={!!errors.phoneCode}
+                    describedBy={errors.phoneCode ? "phonecode-err" : undefined}
+                  />
                   <input
                     id="phone"
                     name="phone"
@@ -214,6 +214,11 @@ export default function PreorderForm() {
                     onChange={(e) => set("phone", e.target.value)}
                   />
                 </div>
+                {errors.phoneCode && (
+                  <span className="field-error" id="phonecode-err">
+                    {errors.phoneCode}
+                  </span>
+                )}
                 {errors.phone && (
                   <span className="field-error">{errors.phone}</span>
                 )}

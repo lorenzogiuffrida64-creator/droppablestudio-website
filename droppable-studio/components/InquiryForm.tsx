@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { COUNTRY_CODES } from "@/config/countryCodes";
+import { isValidDialCode } from "@/config/countryCodes";
+import CountryCodeField from "@/components/CountryCodeField";
 
 /* budget tiers — kept exactly as the original form */
 const BUDGETS = ["400-1.5k$", "1.5k-5k$", "5k-20k$", "20k-50k$"];
@@ -195,6 +196,8 @@ export default function InquiryForm() {
       }
       const email = (answers["Email"] ?? "").trim();
       if (email && !isEmail(email)) e["Email"] = "Enter a valid email";
+      if (!isValidDialCode(answers["Phone Code"] ?? ""))
+        e["Phone Code"] = "Add your country code";
     } else if (s.kind === "choice") {
       if (s.required && !(answers[s.name] ?? "").trim()) e[s.name] = "Required";
       if (
@@ -428,7 +431,9 @@ export default function InquiryForm() {
                   />
                   <div
                     className={`field full${
-                      errors["Phone Number"] ? " invalid" : ""
+                      errors["Phone Number"] || errors["Phone Code"]
+                        ? " invalid"
+                        : ""
                     }`}
                   >
                     <label htmlFor="phone-number">
@@ -438,18 +443,16 @@ export default function InquiryForm() {
                       </span>
                     </label>
                     <div className="phone-row">
-                      <select
+                      <CountryCodeField
+                        id="phone-code"
                         name="Phone Code"
                         value={answers["Phone Code"] ?? "+39"}
-                        onChange={(e) => set("Phone Code", e.target.value)}
-                        aria-label="Country dialing code"
-                      >
-                        {COUNTRY_CODES.map((c) => (
-                          <option key={c.n} value={c.code} title={c.n}>
-                            {c.code}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(c) => set("Phone Code", c)}
+                        invalid={!!errors["Phone Code"]}
+                        describedBy={
+                          errors["Phone Code"] ? "phone-code-err" : undefined
+                        }
+                      />
                       <input
                         id="phone-number"
                         name="Phone Number"
@@ -467,6 +470,11 @@ export default function InquiryForm() {
                         }
                       />
                     </div>
+                    {errors["Phone Code"] && (
+                      <span className="field-error" id="phone-code-err">
+                        {errors["Phone Code"]}
+                      </span>
+                    )}
                     {errors["Phone Number"] && (
                       <span className="field-error" id="phone-number-err">
                         {errors["Phone Number"]}

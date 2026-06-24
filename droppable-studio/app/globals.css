@@ -532,8 +532,13 @@ footer :focus-visible{outline-color:var(--sage)}
   background-repeat:no-repeat;background-position:right 4px center;
 }
 
-/* phone: country-code select + number */
-.phone-row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:end}
+/* phone: free-type country code (live flag) + number */
+.phone-row{display:grid;grid-template-columns:118px 1fr;gap:14px;align-items:end}
+.phone-code{display:flex;align-items:center;gap:8px;border-bottom:1.5px solid var(--blu);transition:border-color .35s var(--ease)}
+.phone-code .phone-flag{flex:none;width:26px;text-align:center;font-size:20px;line-height:1;color:var(--muted)}
+.phone-code input{border-bottom:none;padding-left:0;letter-spacing:.02em}
+.phone-code:focus-within{border-color:var(--blu)}
+.field.invalid .phone-code{border-color:var(--blu)}
 
 /* segmented control (business volume) */
 .seg{display:inline-flex;border:1.5px solid var(--blu);border-radius:999px;overflow:hidden;background:rgba(207,215,199,.4)}
