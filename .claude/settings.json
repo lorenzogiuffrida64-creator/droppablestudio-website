@@ -79,7 +79,9 @@
       "Bash(git fetch *)",
       "Bash(rm -f before-1-hero.png before-why.png before-cta.png before-academy.png before-skool.png after-1-hero.png after-skool.png after-ribbon.png after-cta.png after-manifesto.png after-why.png after-360-nav.png)",
       "Bash(git checkout *)",
-      "Bash(git --no-pager diff droppable-studio/components/Nav.tsx droppable-studio/app/globals.css)"
+      "Bash(git --no-pager diff droppable-studio/components/Nav.tsx droppable-studio/app/globals.css)",
+      "Bash(echo \"=== TSC EXIT: $? ===\")",
+      "Bash(node -e \"const c=require\\('child_process'\\);\")"
     ],
     "additionalDirectories": [
       "/Users/lollo/Library/Caches/ms-playwright-mcp/mcp-chrome-6127ba8"
