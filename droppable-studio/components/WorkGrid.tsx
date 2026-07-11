@@ -42,7 +42,8 @@ export default function WorkGrid() {
     const measure = () => (half = rail.scrollWidth / 2);
     window.addEventListener("resize", measure);
 
-    const DURATION = 80; // seconds per full list — matches the old marquee cadence
+    const DURATION = 40; // seconds per full list — brisk enough to read as a live loop
+                         // against the tiles' own playing-video motion (was 80, too subtle)
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
