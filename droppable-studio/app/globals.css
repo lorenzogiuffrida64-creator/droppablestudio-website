@@ -186,16 +186,44 @@ section{position:relative}
 .work h2, .testi-section h2{color:var(--sage-bright)}
 .work-head p{color:var(--muted-light);max-width:52ch;font-size:16px;font-weight:500}
 
-/* full-bleed looping reel carousel */
-.work-rail{overflow:hidden;padding:8px 0 6px}
-.work-track{display:flex;width:max-content;align-items:flex-start;animation:slide 80s linear infinite}
+/* full-bleed continuous reel loop: JS auto-scroll + native swipe + prev/next arrows.
+   No scroll-snap — snapping fights the continuous motion. The list is rendered
+   twice back-to-back so the wrap at the halfway point is seamless. */
+.work-carousel{position:relative}
+.work-rail{
+  overflow-x:auto;overflow-y:hidden;padding:8px 0 6px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.work-rail::-webkit-scrollbar{display:none}
+.work-track{display:flex;width:max-content;align-items:flex-start}
 
 .reel{
-  /* spacing baked into the card (not a track gap) so the -50% wrap is seamless */
+  /* spacing baked into the card (not a track gap) so the wrap stays seamless */
   margin-right:22px;flex:0 0 auto;
   display:block;
   width:clamp(214px,21vw,288px);
 }
+
+/* prev/next arrows — pinned to the left and right edges of the section */
+.work-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(11,20,33,.55);backdrop-filter:blur(8px);
+  border:1px solid var(--line-light);color:var(--sage-bright);
+  transition:background .3s var(--ease),border-color .3s var(--ease),
+             opacity .3s var(--ease),transform .1s var(--ease);
+}
+.work-arrow:hover{background:rgba(11,20,33,.82);border-color:var(--sage-bright)}
+.work-arrow:active{transform:translateY(-50%) scale(.92)}
+.work-arrow:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
+.work-arrow:disabled{opacity:0;pointer-events:none}
+.work-arrow svg{
+  width:22px;height:22px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+.work-arrow--prev{left:clamp(10px,2.2vw,30px)}
+.work-arrow--next{right:clamp(10px,2.2vw,30px)}
 .reel-frame{
   position:relative;display:block;width:100%;aspect-ratio:9/16;
   border-radius:18px;overflow:hidden;background:var(--blu-ink);
@@ -470,6 +498,7 @@ footer :focus-visible{outline-color:var(--sage)}
 .inq-answer .field-bare input,.inq-answer .field-bare textarea{font-size:19px}
 .inq-answer .seg{flex-wrap:wrap}
 .inq-other{margin-top:8px;max-width:360px;animation:inq-step-in .35s var(--ease) both}
+.inq-note{margin-top:12px;max-width:46ch;color:var(--muted);font-size:15px;font-weight:500;line-height:1.45;animation:inq-step-in .35s var(--ease) both}
 .inq-contact{display:grid;grid-template-columns:1fr 1fr;gap:26px 24px}
 
 /* navigation */
@@ -541,7 +570,7 @@ footer :focus-visible{outline-color:var(--sage)}
 .field.invalid .phone-code{border-color:var(--blu)}
 
 /* segmented control (business volume) */
-.seg{display:inline-flex;border:1.5px solid var(--blu);border-radius:999px;overflow:hidden;background:rgba(207,215,199,.4)}
+.seg{display:inline-flex;align-self:flex-start;border:1.5px solid var(--blu);border-radius:999px;overflow:hidden;background:rgba(207,215,199,.4)}
 .seg label{position:relative;cursor:pointer;display:block}
 .seg input{position:absolute;opacity:0;width:0;height:0}
 .seg span{
@@ -685,6 +714,7 @@ footer :focus-visible{outline-color:var(--sage)}
   .uc-banner-label{font-size:8.5px;letter-spacing:.13em}
 
   .reel{width:min(66vw,260px)}
+  .work-arrow{display:none} /* swipe replaces the arrows on touch/phones */
   .hero-foot .loc{display:none}
   .foot-cols{gap:34px}
   .foot-hero{margin:44px 0 38px;gap:12px}
@@ -698,10 +728,11 @@ footer :focus-visible{outline-color:var(--sage)}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   .marquee-track{animation:none}
-  /* freeze the carousels; let them scroll horizontally so all cards stay reachable */
-  .testi,.work-rail{overflow-x:auto}
-  .testi-track,.work-track{animation:none}
-  .testi-card[aria-hidden="true"],.reel[aria-hidden="true"]{display:none} /* drop the loop's duplicate copy */
+  /* freeze the carousels; they stay scrollable so every card is reachable, and the
+     duplicate loop copy is dropped so nothing shows twice in the static row */
+  .testi{overflow-x:auto}
+  .testi-track{animation:none}
+  .testi-card[aria-hidden="true"],.reel[aria-hidden="true"]{display:none}
   .scroll-hint b{animation:none}
   .rv{opacity:1;transform:none;transition:none}
   .foot-king{animation:none !important;transform:none !important}

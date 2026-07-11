@@ -13,7 +13,7 @@
  * re-encode a file in /public/reels so browsers fetch the new version instead of
  * replaying a stale copy from their media cache.
  */
-export const REELS_VERSION = 4;
+export const REELS_VERSION = 6;
 
 export type WorkItem = {
   ph: 1 | 2 | 3 | 4 | 5 | 6; // placeholder gradient if a video is ever missing
@@ -33,11 +33,12 @@ export const WORK: WorkItem[] = [
   { ph: 4, brand: "Freelico",     category: "Tech",        adId: "AD-304", duration: "0:12", platform: "TikTok",   ctr: "+221%", video: "/reels/freelico.mp4" },
   { ph: 5, brand: "Looblet",      category: "Lifestyle",   adId: "AD-716", duration: "0:15", platform: "IG Reels", ctr: "+204%", video: "/reels/looblet.mp4" },
   { ph: 6, brand: "Droppable",    category: "Branding",    adId: "AD-000", duration: "0:10", platform: "Meta",     ctr: "+312%", video: "/reels/logo-concept.mp4" },
-  { ph: 1, brand: "Lumen",        category: "Skincare",    adId: "AD-310", duration: "0:09", platform: "IG Reels", ctr: "+189%", video: "/reels/reel-0310.mp4" },
   { ph: 2, brand: "Halcyon",      category: "Real Estate", adId: "AD-427", duration: "0:10", platform: "YouTube",  ctr: "+176%", video: "/reels/reel-0427.mp4" },
   { ph: 3, brand: "Verona",       category: "Music",       adId: "AD-507", duration: "0:10", platform: "Meta",     ctr: "+233%", video: "/reels/reel-0507.mp4" },
   { ph: 4, brand: "Meridian",     category: "Hospitality", adId: "AD-516", duration: "0:08", platform: "TikTok",   ctr: "+158%", video: "/reels/reel-0516.mp4" },
   { ph: 5, brand: "Atelier Nord", category: "Fashion",     adId: "AD-616", duration: "0:08", platform: "IG Reels", ctr: "+212%", video: "/reels/reel-0616.mp4" },
   { ph: 6, brand: "Aurelia",      category: "Beauty",      adId: "AD-901", duration: "0:17", platform: "IG Reels", ctr: "+227%", video: "/reels/reel-fbc9.mp4" },
   { ph: 1, brand: "Cascade",      category: "Travel",      adId: "AD-902", duration: "0:25", platform: "YouTube",  ctr: "+183%", video: "/reels/reel-1754.mp4" },
+  { ph: 2, brand: "Solene",       category: "Skincare",    adId: "AD-906", duration: "0:34", platform: "IG Reels", ctr: "+241%", video: "/reels/reel-6.mp4" },
+  { ph: 3, brand: "DJI",          category: "Tech",        adId: "AD-907", duration: "0:26", platform: "YouTube",  ctr: "+258%", video: "/reels/reel-dji.mp4" },
 ];

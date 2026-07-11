@@ -27,6 +27,9 @@ type Step =
       variant: "seg" | "chips";
       options: string[];
       required: boolean;
+      /* an optional aside revealed only when a given option is selected —
+         e.g. steering long-horizon leads away from booking a call now */
+      note?: { when: string; text: ReactNode };
     }
   | {
       kind: "text";
@@ -117,6 +120,27 @@ const STEPS: Step[] = [
     variant: "chips",
     options: BUDGETS,
     required: false,
+  },
+  {
+    kind: "choice",
+    name: "When are you ready to start?",
+    q: (
+      <>
+        When are you ready to start <em>scaling the brand?</em>
+      </>
+    ),
+    variant: "seg",
+    options: ["Immediately", "1+ months"],
+    required: true,
+    note: {
+      when: "1+ months",
+      text: (
+        <>
+          No rush — please don&apos;t book a call now. Book it when you&apos;re
+          ready to start.
+        </>
+      ),
+    },
   },
   {
     kind: "contact",
@@ -395,6 +419,12 @@ export default function InquiryForm() {
                       />
                     </div>
                   )}
+                  {current.note &&
+                    answers[current.name] === current.note.when && (
+                      <p className="inq-note" role="note">
+                        {current.note.text}
+                      </p>
+                    )}
                 </div>
               )}
 

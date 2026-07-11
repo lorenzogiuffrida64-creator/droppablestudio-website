@@ -28,6 +28,7 @@ const FIELD_ORDER = [
   "Why did you choose to use AI for this project?",
   "What is your business size?",
   "What is your budget range for this project?",
+  "When are you ready to start?",
   "Why Droppable?",
 ];
 
@@ -41,6 +42,7 @@ const REQUIRED = [
   "How much growth is in attention you're not capturing?",
   "Why did you choose to use AI for this project?",
   "What is your business size?",
+  "When are you ready to start?",
   "Why Droppable?",
 ];
 
