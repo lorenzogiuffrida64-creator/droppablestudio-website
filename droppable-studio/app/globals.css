@@ -179,7 +179,7 @@ section{position:relative}
 /* ---------- work ---------- */
 .work{padding:clamp(130px,18vh,210px) 0 40px}
 .work-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;margin-bottom:64px}
-.work h2, .why h2, .cta h2, .academy h2, .testi-section h2{
+.work h2, .why h2, .cta h2, .academy h2, .testi-section h2, .level h2{
   font-family:var(--font-primary);font-weight:500;
   font-size:clamp(50px, 8.8vw, 118px);line-height:.99;letter-spacing:var(--track);
 }
@@ -658,6 +658,68 @@ footer :focus-visible{outline-color:var(--sage)}
   .inq-king{animation:none !important;transform:none !important}
   .inq-step{animation:none}
   .inq-progress-bar span{transition:none}
+}
+
+/* ---------- application form (/apply, hidden hiring page) ---------- */
+.apply{padding:clamp(128px,18vh,180px) 0 clamp(90px,14vh,160px);position:relative}
+.apply-col{max-width:720px;margin:0 auto;position:relative;z-index:1}
+.apply-card{
+  border:1px solid var(--line);border-radius:26px;
+  padding:clamp(30px,5vw,56px);
+  background:linear-gradient(180deg, rgba(234,240,227,.72), rgba(234,240,227,.32));
+  backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;gap:30px;
+}
+.apply-hr{border:none;border-top:1px solid var(--line);margin:6px 0}
+.apply-label{font-weight:700;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--blu-ink)}
+.apply-sub{color:var(--muted);font-size:14.5px;font-weight:500;margin:8px 0 24px;max-width:52ch}
+.apply-hint{color:var(--muted);font-size:13px;font-weight:500}
+.apply-work{display:flex;flex-direction:column;gap:28px;margin-top:24px}
+
+/* skill sliders — 0/10 self-rating */
+.skill{display:flex;flex-direction:column;gap:12px;padding:10px 0 22px}
+.skill-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.skill-name{font-weight:700;font-size:15.5px;color:var(--blu-ink);letter-spacing:-0.01em}
+.skill-tag{margin-left:10px;font-weight:700;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--blu)}
+.skill-score{font-weight:700;font-size:12px;color:var(--muted);white-space:nowrap}
+.skill-score b{font-family:var(--font-primary);font-weight:800;font-size:24px;letter-spacing:var(--track);color:var(--blu-ink)}
+.skill-desc{color:var(--muted);font-size:13.5px;font-weight:500;margin:-6px 0 2px;max-width:52ch}
+.skill-range{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:999px;
+  background:linear-gradient(to right, var(--blu) var(--fill,0%), rgba(53,80,112,.22) var(--fill,0%));
+  cursor:pointer;
+}
+.skill-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--sage-bright);border:2px solid var(--blu);
+  box-shadow:0 6px 14px -6px rgba(27,44,64,.55);cursor:grab;
+}
+.skill-range::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--sage-bright);border:2px solid var(--blu);cursor:grab;
+}
+.skill-range:focus-visible{outline:2px solid var(--blu);outline-offset:6px}
+
+.apply-count{align-self:flex-end;font-weight:600;font-size:12px;color:var(--muted);letter-spacing:.04em}
+.apply-submit{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:4px}
+.apply-submit .btn{width:100%;justify-content:center;padding:18px 28px;font-size:13px}
+.apply-footnote{font-weight:500;font-size:13px;color:var(--muted);text-align:center}
+
+/* "This is the level." — dark reel showcase closing the page */
+.level{padding:clamp(120px,16vh,200px) 0 clamp(60px,8vh,90px);text-align:center}
+.level::after{content:none} /* the page ends here — no lower band extension */
+.level h2{color:var(--sage-bright);margin-bottom:clamp(40px,7vh,72px)}
+.level h2 em{font-weight:400;color:var(--sage)}
+.apply-setbar{
+  margin-top:clamp(64px,9vh,100px);
+  font-weight:700;font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--muted-light);text-align:center;
+}
+
+@media (max-width:640px){
+  .apply{padding:104px 0 84px}
+  .apply-card{padding:28px 18px 32px;gap:26px}
+  .level{padding:104px 0 56px}
 }
 
 /* ---------- responsive ---------- */

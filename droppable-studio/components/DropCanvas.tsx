@@ -153,14 +153,17 @@ export default function DropCanvas() {
   const keysRef = useRef<Key[]>(KEYS);
   const morphRef = useRef<"scroll" | "pawn">("scroll");
   const renderStaticRef = useRef<() => void>(() => {});
-  /* the pre-order and inquiry forms are focused, drop-free pages; the loop
-     reads this each frame to pause, and the canvas is hidden outright */
+  /* the pre-order, inquiry and apply forms are focused, drop-free pages; the
+     loop reads this each frame to pause, and the canvas is hidden outright */
   const hiddenRef = useRef(false);
 
   useEffect(() => {
     const inquiry = pathname === "/inquiry";
     const hidden =
-      pathname === "/preorder" || pathname === "/preorder/success" || inquiry;
+      pathname === "/preorder" ||
+      pathname === "/preorder/success" ||
+      pathname === "/apply" ||
+      inquiry;
     hiddenRef.current = hidden;
     const canvas = canvasRef.current;
     if (canvas) canvas.style.display = hidden ? "none" : "";

@@ -488,7 +488,7 @@ export default function InquiryForm() {
                         name="Phone Number"
                         type="tel"
                         inputMode="tel"
-                        placeholder="328 827 3008"
+                        placeholder="333 123 4567"
                         value={answers["Phone Number"] ?? ""}
                         onChange={(e) => set("Phone Number", e.target.value)}
                         aria-required
