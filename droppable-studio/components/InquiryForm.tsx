@@ -41,6 +41,9 @@ type Step =
     }
   | { kind: "contact"; q: ReactNode };
 
+/* the 1–10 scales render as compact wrapping chips */
+const SCALE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
 const STEPS: Step[] = [
   {
     kind: "choice",
@@ -64,34 +67,77 @@ const STEPS: Step[] = [
   },
   {
     kind: "text",
-    name: "What is your brand about?",
+    name: "What does your brand do, and who is it for?",
     q: (
       <>
-        What&apos;s the brand — and who&apos;s it <em>for?</em>
+        What does your brand do, and who&apos;s it <em>for?</em>
       </>
     ),
-    placeholder: "A few words on what you make and who it's for",
+    placeholder: "A few words on what you make and exactly who it's for",
     required: true,
   },
   {
     kind: "choice",
-    name: "How much growth is in attention you're not capturing?",
+    name: "#1 result wanted from this campaign",
     q: (
       <>
-        How much of your growth is sitting in attention you{" "}
-        <em>haven&apos;t captured yet?</em>
+        What&apos;s the #1 result you want from <em>this campaign?</em>
       </>
     ),
-    variant: "seg",
-    options: ["A little", "A fair amount", "A lot", "Most of it"],
+    variant: "chips",
+    options: [
+      "More sales",
+      "Brand awareness",
+      "Launch a new product",
+      "Beat a competitor",
+      "Other",
+    ],
     required: true,
   },
   {
     kind: "text",
-    name: "Why did you choose to use AI for this project?",
+    name: "What changes in the business in 90 days if this works",
     q: (
       <>
-        Why AI, <em>why now</em> — what made you look this way?
+        If this works exactly how you picture it, what changes in your business
+        in <em>90 days?</em>
+      </>
+    ),
+    placeholder: "Paint the picture, where's the brand once this lands?",
+    multiline: true,
+    required: true,
+  },
+  {
+    kind: "text",
+    name: "What they've already tried, and why it didn't work",
+    q: (
+      <>
+        What have you already tried to get there, and why{" "}
+        <em>didn&apos;t it land?</em>
+      </>
+    ),
+    placeholder: "Agencies, in-house, ads, creators… what fell short?",
+    multiline: true,
+    required: true,
+  },
+  {
+    kind: "choice",
+    name: "Urgency (1–10)",
+    q: (
+      <>
+        How urgent is fixing this <em>right now?</em>
+      </>
+    ),
+    variant: "chips",
+    options: SCALE,
+    required: true,
+  },
+  {
+    kind: "text",
+    name: "Why AI, and why now?",
+    q: (
+      <>
+        Why AI, <em>why now</em>, what made you look this way?
       </>
     ),
     placeholder: "Your answer here…",
@@ -99,27 +145,16 @@ const STEPS: Step[] = [
   },
   {
     kind: "choice",
-    name: "What is your business size?",
+    name: "What they're prepared to invest",
     q: (
       <>
-        Where&apos;s the brand <em>right now?</em>
-      </>
-    ),
-    variant: "seg",
-    options: ["Low", "Medium", "High"],
-    required: true,
-  },
-  {
-    kind: "choice",
-    name: "What is your budget range for this project?",
-    q: (
-      <>
-        To scope the right concept, what <em>range</em> are we working in?
+        To make this actually happen, what are you prepared to{" "}
+        <em>invest?</em>
       </>
     ),
     variant: "chips",
     options: BUDGETS,
-    required: false,
+    required: true,
   },
   {
     kind: "choice",
@@ -130,17 +165,8 @@ const STEPS: Step[] = [
       </>
     ),
     variant: "seg",
-    options: ["Immediately", "1+ months"],
+    options: ["Immediately", "This week", "This month"],
     required: true,
-    note: {
-      when: "1+ months",
-      text: (
-        <>
-          No rush — please don&apos;t book a call now. Book it when you&apos;re
-          ready to start.
-        </>
-      ),
-    },
   },
   {
     kind: "contact",
@@ -152,20 +178,26 @@ const STEPS: Step[] = [
   },
   {
     kind: "text",
-    name: "Why Droppable?",
+    name: "Why Droppable specifically?",
     q: (
       <>
-        Last one that matters — why <em>Droppable?</em> What made you stop
-        scrolling on us?
+        Last one that matters, why <em>Droppable</em> specifically? What made
+        you stop scrolling on us?
       </>
     ),
-    placeholder: "Be honest — what pulled you in?",
+    placeholder: "Be honest, what pulled you in?",
     multiline: true,
     required: true,
   },
 ];
 
-const CONTACT_REQUIRED = ["First Name", "Last Name", "Email", "Phone Number"];
+const CONTACT_REQUIRED = [
+  "First Name",
+  "Last Name",
+  "Email",
+  "Phone Number",
+  "Company (preferred)",
+];
 
 type Answers = Record<string, string>;
 type Errors = Record<string, string>;
@@ -174,6 +206,7 @@ type Status = "idle" | "submitting" | "done" | "error";
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
 
 export default function InquiryForm() {
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ "Phone Code": "+39" });
   const [errors, setErrors] = useState<Errors>({});
@@ -293,6 +326,31 @@ export default function InquiryForm() {
     }
   }
 
+  if (!started) {
+    return (
+      <section className="inquiry">
+        <div className="wrap">
+          <div className="inq-welcome">
+            <h1>
+              We&apos;d love to get to know <em>more about you.</em>
+            </h1>
+            <p>
+              Take 3 minutes. The more we understand you, the better we can
+              help.
+            </p>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setStarted(true)}
+            >
+              Start <span className="arr">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (status === "done") {
     return (
       <section className="inquiry">
@@ -309,7 +367,7 @@ export default function InquiryForm() {
               We&apos;ll be <em>in touch.</em>
             </h2>
             <p>
-              Thank you — your inquiry just landed with the studio. We review
+              Thank you, your inquiry just landed with the studio. We review
               every brief personally and reply within 1–2 business days.
             </p>
             <Link className="btn" href="/">
@@ -413,7 +471,7 @@ export default function InquiryForm() {
                         name={`${current.name} — other`}
                         value={answers[`${current.name} — other`] ?? ""}
                         onChange={(v) => set(`${current.name} — other`, v)}
-                        placeholder="Tell us your industry"
+                        placeholder="Tell us more"
                         required
                         error={errors[`${current.name} — other`]}
                       />
@@ -517,7 +575,9 @@ export default function InquiryForm() {
                     value={answers["Company (preferred)"] ?? ""}
                     onChange={(v) => set("Company (preferred)", v)}
                     placeholder="Acme Inc"
+                    required
                     full
+                    error={errors["Company (preferred)"]}
                   />
                 </div>
               )}
