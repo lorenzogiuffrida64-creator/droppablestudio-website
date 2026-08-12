@@ -41,4 +41,5 @@ export const WORK: WorkItem[] = [
   { ph: 1, brand: "Cascade",      category: "Travel",      adId: "AD-902", duration: "0:25", platform: "YouTube",  ctr: "+183%", video: "/reels/reel-1754.mp4" },
   { ph: 2, brand: "Solene",       category: "Skincare",    adId: "AD-906", duration: "0:34", platform: "IG Reels", ctr: "+241%", video: "/reels/reel-6.mp4" },
   { ph: 3, brand: "DJI",          category: "Tech",        adId: "AD-907", duration: "0:26", platform: "YouTube",  ctr: "+258%", video: "/reels/reel-dji.mp4" },
+  { ph: 4, brand: "Fendi",        category: "Luxury",      adId: "AD-908", duration: "0:19", platform: "YouTube",  ctr: "+264%", video: "/reels/reel-v2.mp4" },
 ];

@@ -28,4 +28,6 @@ export const CLIENTS: Client[] = [
   { name: "Freelifeco", logo: "/logos/freelifeco.png", width: 40 },
   { name: "Looblet", logo: "/logos/looblet.png", width: 125 },
   { name: "Wearvybes", logo: "/logos/wearvybes.png", width: 28 },
+  { name: "Arcads", logo: "/logos/arcads.svg", width: 137 },
+  { name: "Higgsfield", logo: "/logos/higgsfield.svg", width: 28 },
 ];
