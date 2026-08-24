@@ -42,4 +42,5 @@ export const WORK: WorkItem[] = [
   { ph: 2, brand: "Solene",       category: "Skincare",    adId: "AD-906", duration: "0:34", platform: "IG Reels", ctr: "+241%", video: "/reels/reel-6.mp4" },
   { ph: 3, brand: "DJI",          category: "Tech",        adId: "AD-907", duration: "0:26", platform: "YouTube",  ctr: "+258%", video: "/reels/reel-dji.mp4" },
   { ph: 4, brand: "Fendi",        category: "Luxury",      adId: "AD-908", duration: "0:19", platform: "YouTube",  ctr: "+264%", video: "/reels/reel-v2.mp4" },
+  { ph: 5, brand: "Cold Culture", category: "Streetwear",  adId: "AD-909", duration: "0:12", platform: "IG Reels", ctr: "+236%", video: "/reels/reel-cold-culture.mp4" },
 ];
