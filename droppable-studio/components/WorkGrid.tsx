@@ -1,4 +1,4 @@
-import ReelCarousel from "@/components/ReelCarousel";
+import WorkFan from "@/components/WorkFan";
 import { LINKS } from "@/config/links";
 import { WORK } from "@/config/work";
 
@@ -17,7 +17,7 @@ export default function WorkGrid() {
         </div>
       </div>
 
-      <ReelCarousel items={WORK} />
+      <WorkFan items={WORK} />
 
       <div className="wrap">
         <p className="work-note rv">

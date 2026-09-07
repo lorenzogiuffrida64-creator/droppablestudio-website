@@ -83,19 +83,32 @@ export default function ReelCarousel({ items }: { items: WorkItem[] }) {
 
   // Arrows nudge exactly one reel and briefly pause the loop. It's an infinite
   // loop, so stepping back past the start jumps into the identical second copy.
+  // Tiles are variable-width (each keeps its video's own ratio), so we scroll to
+  // the neighbouring tile's edge rather than by one fixed step.
   const scrollByReels = (dir: 1 | -1) => {
     const rail = railRef.current;
     if (!rail) return;
-    const reels = rail.querySelectorAll<HTMLElement>(".reel");
-    const step =
-      reels.length > 1
-        ? reels[1].offsetLeft - reels[0].offsetLeft
-        : reels[0]?.offsetWidth ?? 0;
+    const reels = Array.from(rail.querySelectorAll<HTMLElement>(".reel"));
+    if (!reels.length) return;
+    const base = reels[0].offsetLeft; // track start — offsetLeft is parent-relative
+    const at = (r: HTMLElement) => r.offsetLeft - base;
     holdAuto(1200);
-    if (!reduceRef.current && dir < 0 && rail.scrollLeft < step) {
+    if (!reduceRef.current && dir < 0 && rail.scrollLeft < at(reels[1] ?? reels[0])) {
       rail.scrollLeft += rail.scrollWidth / 2; // wrap so prev is seamless
     }
-    rail.scrollBy({ left: dir * step, behavior: reduceRef.current ? "auto" : "smooth" });
+    const x = rail.scrollLeft;
+    const target =
+      dir > 0
+        ? reels.find((r) => at(r) > x + 1)
+        : reels.reduceRight<HTMLElement | undefined>(
+            (found, r) => found ?? (at(r) < x - 1 ? r : undefined),
+            undefined,
+          );
+    if (!target) return;
+    rail.scrollTo({
+      left: at(target),
+      behavior: reduceRef.current ? "auto" : "smooth",
+    });
   };
 
   return (

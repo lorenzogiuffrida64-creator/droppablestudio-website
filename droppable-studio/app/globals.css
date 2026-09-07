@@ -189,7 +189,9 @@ section{position:relative}
 /* full-bleed continuous reel loop: JS auto-scroll + native swipe + prev/next arrows.
    No scroll-snap — snapping fights the continuous motion. The list is rendered
    twice back-to-back so the wrap at the halfway point is seamless. */
-.work-carousel{position:relative}
+/* --reel-h is the rail's one fixed dimension; each tile's width is derived from
+   its own video ratio, so the row stays level while nothing gets letterboxed. */
+.work-carousel{position:relative;--reel-h:clamp(176px,16.5vw,244px)}
 .work-rail{
   overflow-x:auto;overflow-y:hidden;padding:8px 0 6px;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
@@ -201,7 +203,9 @@ section{position:relative}
   /* spacing baked into the card (not a track gap) so the wrap stays seamless */
   margin-right:22px;flex:0 0 auto;
   display:block;
-  width:clamp(214px,21vw,288px);
+  /* --ar is the video's native w/h, set per tile — 16/9, 4/3, whatever it is.
+     Fixed height x native ratio = a frame the file fills exactly: no bars, no crop. */
+  width:calc(var(--reel-h) * var(--ar,16/9));
 }
 
 /* prev/next arrows — pinned to the left and right edges of the section */
@@ -225,7 +229,7 @@ section{position:relative}
 .work-arrow--prev{left:clamp(10px,2.2vw,30px)}
 .work-arrow--next{right:clamp(10px,2.2vw,30px)}
 .reel-frame{
-  position:relative;display:block;width:100%;aspect-ratio:9/16;
+  position:relative;display:block;width:100%;height:var(--reel-h);
   border-radius:18px;overflow:hidden;background:var(--blu-ink);
   border:1px solid var(--line-light);
   box-shadow:0 26px 60px -32px rgba(11,20,33,.75);
@@ -272,6 +276,46 @@ section{position:relative}
 .ph-4{background:radial-gradient(140% 90% at 0% 80%, #7E97B5, #2E4664 55%, #14233A)}
 .ph-5{background:radial-gradient(120% 100% at 90% 90%, #E3E8DA, #7C9089 50%, #1D3048)}
 .ph-6{background:radial-gradient(130% 100% at 30% 0%, #C5CFC0, #5A7390 55%, #18293E)}
+
+/* ---------- reel fan (home showcase) ---------- */
+/* Movement lifted from the Osmo reference (DESIGN.md): cards pinned along a
+   shallow arc "like polaroids pinned to a board", fanned -5deg..+5deg, drifting
+   right to left. Tilt / lift / scale are written per frame by WorkFan from each
+   card's distance to the viewport centre, so the fan re-forms as it drifts —
+   transform only, nothing here touches layout. Palette and type stay the
+   studio's; only the motion is borrowed. */
+.work-fan{position:relative;--fan-h:clamp(176px,16.5vw,244px);--fan-top:clamp(18px,2.5vh,30px)}
+.fan-rail{
+  overflow-x:auto;overflow-y:hidden;
+  /* room for the lean at the crown, and for the edge cards to fall away below it */
+  padding:var(--fan-top) 0 clamp(58px,7.5vh,82px);
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.fan-rail::-webkit-scrollbar{display:none}
+.fan-track{display:flex;width:max-content;align-items:center}
+
+.fan-card{
+  /* spacing baked into the card (not a track gap) so the wrap stays seamless */
+  margin-right:clamp(16px,1.7vw,26px);flex:0 0 auto;
+  position:relative;display:block;
+  /* --ar is the video's native w/h: fixed height x native ratio = a frame the
+     file fills exactly, no bars and no crop */
+  height:var(--fan-h);width:calc(var(--fan-h) * var(--ar,16/9));
+  /* DESIGN.md radius philosophy: sharp on content tiles, pills only on controls */
+  border-radius:5px;overflow:hidden;
+  background:var(--blu-ink);border:1px solid var(--line-light);
+  /* flat and stamp-printed — the reference carries no shadow on its cards */
+  transform-origin:50% 50%;
+}
+.fan-media{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:saturate(.95);transition:transform .8s var(--ease), filter .8s var(--ease);
+}
+/* the hover lift lives on the media, so it never fights the fan's own transform */
+.fan-card:hover .fan-media{transform:scale(1.05);filter:saturate(1.05)}
+/* the arrows centre on the cards, not on the rail's lopsided padding box, and
+   clear the fan — WorkFan drives card z-index up to 60 as they near the centre */
+.work-fan .work-arrow{top:calc(var(--fan-top) + var(--fan-h) / 2);z-index:70}
 
 /* ---------- why AI ledger ---------- */
 .why{padding:clamp(150px,20vh,250px) 0 clamp(160px,20vh,260px)}
@@ -790,7 +834,8 @@ footer :focus-visible{outline-color:var(--sage)}
   .uc-banner{left:50%;right:auto;top:-13px;transform:translateX(-50%) rotate(-4deg);padding:6px 13px}
   .uc-banner-label{font-size:8.5px;letter-spacing:.13em}
 
-  .reel{width:min(66vw,260px)}
+  .work-carousel{--reel-h:min(38vw,168px)}
+  .work-fan{--fan-h:min(38vw,168px);--fan-top:14px}
   .work-arrow{display:none} /* swipe replaces the arrows on touch/phones */
   .hero-foot .loc{display:none}
   .foot-cols{gap:34px}
@@ -801,6 +846,137 @@ footer :focus-visible{outline-color:var(--sage)}
   .brand-name{display:none}
 }
 
+/* ---------- portfolio wheel (/portfolio) ---------- */
+/* Only the top of the circle is in frame: the ring's centre sits just below the
+   stage (--cy), so the arc rises over the copy and its flanks run off the sides.
+   --r drives everything else, so the whole composition scales as one. */
+.pf-stage{
+  --h:clamp(660px, 100svh, 1080px);    /* stage height — capped so tall screens don't stretch the arc thin */
+  --r:min(calc(var(--h) * .66), 760px);/* ring radius */
+  --cy:calc(100% - var(--r) * .22);    /* ring centre, low in the stage */
+  --copy:.30;                          /* centre copy, this much of a radius above it */
+  --card:min(calc(var(--r) * .30), 26vw, 168px); /* geometric mean of a card's sides */
+  --pop:calc(var(--card) * .17);       /* how far the hovered reel leaves the circle */
+  position:relative;height:var(--h);overflow:hidden;
+  background:var(--blu-ink);
+}
+/* the dark the wheel turns in — keeps the centre copy legible over the arc */
+.pf-stage::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(56% 44% at 50% 62%,
+    rgba(27,44,64,.94) 0%, rgba(27,44,64,.74) 44%, rgba(27,44,64,0) 74%);
+}
+
+/* the wheel is a single point in the layout; every card hangs off it */
+.pf-wheel{
+  position:absolute;left:50%;top:var(--cy);width:0;height:0;z-index:1;
+  transform:scale(1);transition:transform .9s var(--ease);
+}
+.pf-wheel.is-hot{transform:scale(1.075)}
+.pf-ring{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
+
+.pf-card{
+  position:absolute;left:0;top:0;padding:0;cursor:pointer;
+  /* box cut to the shape of the picture inside the reel (WorkItem.aspect) */
+  width:calc(var(--card) * var(--w));
+  height:calc(var(--card) * var(--h));
+  margin:calc(var(--card) * var(--h) / -2) 0 0 calc(var(--card) * var(--w) / -2);
+  /* centred on the ring point, then pushed out along its own spoke */
+  transform:rotate(var(--rot)) translateY(calc(var(--r) * -1));
+  border-radius:clamp(10px,1vw,18px);overflow:hidden;
+  background:var(--blu-deep);border:1px solid var(--line-light);
+  box-shadow:0 30px 60px -34px rgba(0,0,0,.9);
+  transition:transform .6s var(--ease), border-color .6s var(--ease),
+             box-shadow .6s var(--ease);
+}
+.pf-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+/* the reel under the cursor steps out of the circle and asks to be clicked */
+.pf-card:hover,.pf-card:focus-visible{
+  z-index:5;
+  transform:rotate(var(--rot)) translateY(calc((var(--r) + var(--pop)) * -1)) scale(1.07);
+  border-color:rgba(234,240,227,.5);
+  box-shadow:0 44px 80px -30px rgba(0,0,0,.95);
+}
+/* centre copy — sits inside the arc, above the vignette */
+.pf-centre{
+  position:absolute;left:50%;top:calc(var(--cy) - var(--r) * var(--copy));
+  transform:translate(-50%,-50%);z-index:3;
+  width:min(92vw,760px);text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(13px,2.2vh,24px);
+  pointer-events:none; /* the wheel keeps its hover band under the copy */
+}
+.pf-centre > *{pointer-events:auto}
+.pf-centre .eyebrow{justify-content:center;flex-wrap:wrap;color:var(--muted-light)}
+.pf-centre .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.55}
+.pf-centre h1{
+  font-family:var(--font-primary);font-weight:500;
+  font-size:clamp(36px,5.4vw,84px);line-height:.99;letter-spacing:var(--track);
+  max-width:13ch;color:var(--sage-bright);text-wrap:balance;
+}
+.pf-centre h1 em{font-weight:400;color:var(--sage);font-size:1.02em}
+.pf-type{
+  font-family:var(--font-primary);font-weight:500;
+  font-size:clamp(15px,1.5vw,20px);color:var(--muted-light);
+}
+.pf-type em{font-size:1.06em;color:var(--sage-bright)}
+.pf-type .type-cursor{background:var(--sage-bright)}
+.pf-centre .btn{
+  margin-top:6px;
+  background:var(--sage-bright);border-color:var(--sage-bright);color:var(--blu-ink);
+}
+.pf-centre .btn:hover{background:var(--sage);border-color:var(--sage)}
+
+/* header over the dark stage */
+.inq-head.pf-head{background:rgba(27,44,64,.6);box-shadow:0 1px 0 var(--line-light)}
+.pf-head .brand{color:var(--sage-bright)}
+.pf-head .inq-back{color:var(--muted-light)}
+.pf-head .inq-back:hover{color:var(--sage-bright)}
+.pf-head :focus-visible{outline-color:var(--sage-bright)}
+
+/* the reel, full size */
+.pf-lightbox{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;
+  padding:clamp(20px,5vw,64px);
+  background:rgba(11,20,33,.88);backdrop-filter:blur(16px);
+  animation:pf-fade .35s var(--ease);
+}
+@keyframes pf-fade{from{opacity:0}to{opacity:1}}
+.pf-lb-inner{display:flex;flex-direction:column;align-items:center}
+.pf-lb-card{
+  position:relative;aspect-ratio:var(--a);
+  width:min(90vw, calc(82svh * var(--a)));
+  border-radius:16px;overflow:hidden;background:var(--blu-ink);
+  border:1px solid var(--line-light);box-shadow:0 60px 120px -50px rgba(0,0,0,.95);
+}
+.pf-lb-close{
+  position:absolute;top:clamp(16px,3vw,30px);right:clamp(16px,3vw,30px);
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:rgba(27,44,64,.7);border:1px solid var(--line-light);color:var(--sage-bright);
+  transition:background .3s var(--ease),border-color .3s var(--ease);
+}
+.pf-lb-close:hover{background:var(--blu);border-color:var(--sage-bright)}
+.pf-lb-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+/* the brands, under the wheel */
+.pf-clients{padding:clamp(70px,11vh,120px) 0 clamp(80px,13vh,140px)}
+.pf-clients .eyebrow{justify-content:center;margin-bottom:clamp(28px,5vh,46px)}
+.pf-clients .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.55}
+
+@media (max-width:640px){
+  /* phones see a slice of the arc, so it sits lower and closer to the copy and
+     the cards are bigger — three reels reading clearly beats eight tiny ones */
+  .pf-stage{
+    --r:calc(var(--h) * .55);
+    --cy:calc(100% - var(--r) * .10);
+    --copy:.36;
+    --card:min(calc(var(--r) * .34), 34vw, 168px);
+  }
+  .pf-centre{width:88vw}
+  .pf-centre .eyebrow{font-size:10px;letter-spacing:.18em}
+  .pf-centre .eyebrow::before,.pf-centre .eyebrow::after{display:none}
+}
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
@@ -809,7 +985,8 @@ footer :focus-visible{outline-color:var(--sage)}
      duplicate loop copy is dropped so nothing shows twice in the static row */
   .testi{overflow-x:auto}
   .testi-track{animation:none}
-  .testi-card[aria-hidden="true"],.reel[aria-hidden="true"]{display:none}
+  .testi-card[aria-hidden="true"],.reel[aria-hidden="true"],
+  .fan-card[aria-hidden="true"]{display:none}
   .scroll-hint b{animation:none}
   .rv{opacity:1;transform:none;transition:none}
   .foot-king{animation:none !important;transform:none !important}

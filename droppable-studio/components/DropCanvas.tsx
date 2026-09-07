@@ -153,7 +153,7 @@ export default function DropCanvas() {
   const keysRef = useRef<Key[]>(KEYS);
   const morphRef = useRef<"scroll" | "pawn">("scroll");
   const renderStaticRef = useRef<() => void>(() => {});
-  /* the pre-order, inquiry and apply forms are focused, drop-free pages; the
+  /* the pre-order, inquiry, apply and portfolio pages are drop-free; the
      loop reads this each frame to pause, and the canvas is hidden outright */
   const hiddenRef = useRef(false);
 
@@ -163,6 +163,7 @@ export default function DropCanvas() {
       pathname === "/preorder" ||
       pathname === "/preorder/success" ||
       pathname === "/apply" ||
+      pathname === "/portfolio" || // the wheel carries the page; no WebGL on top
       inquiry;
     hiddenRef.current = hidden;
     const canvas = canvasRef.current;

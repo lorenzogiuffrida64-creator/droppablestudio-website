@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 type WorkTileProps = {
@@ -7,7 +8,13 @@ type WorkTileProps = {
 
 export default function WorkTile({ item, hidden }: WorkTileProps) {
   return (
-    <div className="reel" aria-hidden={hidden || undefined}>
+    // --ar is the video's native w/h; the tile is sized from it so the file
+    // fills the frame exactly — no letterbox bars, no crop.
+    <div
+      className="reel"
+      aria-hidden={hidden || undefined}
+      style={{ "--ar": item.aspect } as CSSProperties}
+    >
       <span className="reel-frame">
         {item.video ? (
           <video
