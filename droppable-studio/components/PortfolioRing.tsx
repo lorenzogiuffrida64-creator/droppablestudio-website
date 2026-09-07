@@ -23,10 +23,11 @@ import { REELS_VERSION, type WorkItem } from "@/config/work";
    No labels anywhere — the reels speak for themselves.
 
    Cost control (this page exists so the main site stays smooth): no WebGL here,
-   posters carry the first paint, videos are preload="none" and only play while
-   the stage is on screen AND the card itself is inside the viewport — off-screen
-   arc cards stay paused. Playback starts a few reels at a time so decoding never
-   spikes. Under prefers-reduced-motion the wheel is static and nothing plays.
+   posters carry the first paint, the cards play small preview encodes rather
+   than the masters, videos are preload="none", and only the handful nearest the
+   top of the arc ever decode — everything else stays paused on its last frame.
+   Playback starts a few reels at a time so decoding never spikes. Under
+   prefers-reduced-motion the wheel is static and nothing plays.
    ============================================================ */
 
 const SPIN_IDLE = 3.4; // deg/sec — a full turn in ~105s
@@ -36,6 +37,8 @@ const SPIN_EASE = 2.4; // how fast the speed lerps between the two, per second
 const VIS_MARGIN = 140; // px of slack around the viewport before a card is "off screen"
 const SYNC_MS = 300; // playback bookkeeping interval
 const STARTS_PER_SYNC = 4; // reels allowed to start per tick — staggers decoding
+const MAX_PLAYING = 9; // concurrent decoders, desktop
+const MAX_PLAYING_NARROW = 5; // …and on phones, where the budget is far smaller
 
 /* WorkItem.aspect is the reel's native w/h. It has been both a number and a
    CSS ratio string ("16/9") in config/work.ts — accept either. */
@@ -44,6 +47,11 @@ const ratio = (aspect: number | string) => {
   const [w, h] = aspect.split("/").map(Number);
   return h ? w / h : Number(aspect) || 16 / 9;
 };
+
+/* The wheel plays 480px-wide preview encodes (/reels/wheel/) — the whole ring
+   is ~3 MB instead of ~26 MB of 720p masters, and a card is never more than
+   ~220px wide anyway. The lightbox loads the full-quality file. */
+const previewFor = (video: string) => video.replace("/reels/", "/reels/wheel/");
 
 /* poster frame for a reel: /reels/rolex.mp4 → /posters/rolex.jpg */
 const posterFor = (video: string) =>
@@ -213,26 +221,43 @@ export default function PortfolioRing({
         !activeRef.current; // nothing behind the lightbox needs to keep playing
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      let starts = 0;
 
-      videos.forEach((video, i) => {
-        let show = live;
-        if (show && radius) {
+      /* Rank what is on screen by how near it sits to the top of the arc and
+         let only the most prominent few decode — browsers (Safari above all)
+         choke well before thirteen videos at once. A card that drops out holds
+         its last frame, so nothing flashes; it picks up again on its way round. */
+      const wanted = new Set<number>();
+      if (live) {
+        const onScreen: { i: number; fromTop: number }[] = [];
+        videos.forEach((_, i) => {
           // where this card is right now — trig, not a layout read
-          const a = ((slots[i].angle + spinRef.current) * Math.PI) / 180;
+          const deg = (((slots[i].angle + spinRef.current) % 360) + 360) % 360;
+          const a = (deg * Math.PI) / 180;
           const x = wheel.left + radius * Math.sin(a);
           const y = wheel.top - radius * Math.cos(a);
-          show =
+          if (
             x > -VIS_MARGIN &&
             x < vw + VIS_MARGIN &&
             y > -VIS_MARGIN &&
-            y < vh + VIS_MARGIN;
-        }
-        if (show && video.paused) {
-          if (starts >= STARTS_PER_SYNC) return;
-          starts += 1;
-          video.play().catch(() => {});
-        } else if (!show && !video.paused) {
+            y < vh + VIS_MARGIN
+          ) {
+            onScreen.push({ i, fromTop: Math.min(deg, 360 - deg) });
+          }
+        });
+        onScreen.sort((a, b) => a.fromTop - b.fromTop);
+        onScreen
+          .slice(0, vw < 720 ? MAX_PLAYING_NARROW : MAX_PLAYING)
+          .forEach((c) => wanted.add(c.i));
+      }
+
+      let starts = 0;
+      videos.forEach((video, i) => {
+        if (wanted.has(i)) {
+          if (video.paused && starts < STARTS_PER_SYNC) {
+            starts += 1;
+            video.play().catch(() => {});
+          }
+        } else if (!video.paused) {
           video.pause();
         }
       });
@@ -297,7 +322,7 @@ export default function PortfolioRing({
               >
                 <video
                   className="pf-media"
-                  src={`${item.video}?v=${REELS_VERSION}`}
+                  src={`${previewFor(item.video ?? "")}?v=${REELS_VERSION}`}
                   poster={posterFor(item.video ?? "")}
                   muted
                   loop

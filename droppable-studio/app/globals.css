@@ -318,23 +318,88 @@ section{position:relative}
 .work-fan .work-arrow{top:calc(var(--fan-top) + var(--fan-h) / 2);z-index:70}
 
 /* ---------- why AI ledger ---------- */
-.why{padding:clamp(150px,20vh,250px) 0 clamp(160px,20vh,260px)}
-.why-head{max-width:820px;margin:0 auto 30px;text-align:center}
-.why h2{color:var(--sage-bright)}
+/* Composition recreated from the Osmo reference (DESIGN.md): a narrow left rail
+   (stamped mark + handwritten annotation) against a wide right column that
+   carries the headline and the rows, each row split title-left / body-right
+   under a hairline. Studio palette and typefaces throughout. */
+.why{padding:clamp(120px,16vh,200px) 0 clamp(160px,20vh,260px)}
+.why-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.46fr) minmax(0,1fr);
+  grid-template-areas:"rail head" ". ledger";
+  column-gap:clamp(24px,3.4vw,54px);
+}
+
+/* --- the left rail --- */
+.why-rail{grid-area:rail;display:flex;align-items:flex-start;gap:20px}
+.why-mark{display:flex;flex-direction:column;gap:7px}
+.why-mark-top{display:flex;align-items:flex-start;gap:9px}
+.why-mark-top img{height:34px;width:auto;display:block}
+/* the stamp lines: the brand carries no mono cut, so wide-tracked SF Pro at a
+   tiny size does the typewriter-metadata job the reference gives to Haffer Mono */
+.why-mark-flag,.why-mark-line{
+  font-family:var(--font-primary);font-weight:700;
+  font-size:9.5px;letter-spacing:.2em;line-height:1.35;text-transform:uppercase;
+  color:var(--muted-light);white-space:nowrap;
+}
+.why-mark-flag{padding-top:2px}
+.why-mark-line i{font-style:normal;color:var(--sage)}
+
+/* the annotation — the reference's marker scrawl, spoken in the brand's italic */
+.why-note{
+  margin-left:auto;position:relative;padding-right:6px;
+  font-family:var(--font-secondary);font-style:italic;font-weight:400;
+  font-size:clamp(20px,1.9vw,27px);line-height:.9;letter-spacing:-0.01em;
+  color:var(--sage);white-space:nowrap;
+}
+.why-note svg{
+  display:block;width:clamp(58px,5.4vw,78px);height:auto;
+  margin:4px 0 0 auto;color:var(--sage);opacity:.85;
+}
+
+/* --- the right column --- */
+.why-main{grid-area:head;display:contents}
+.why h2{
+  grid-area:head;color:var(--sage-bright);
+  /* sized to the column it now sits in, not to the full page */
+  font-size:clamp(34px,4.9vw,66px);line-height:1.02;
+  text-wrap:balance;
+}
 .why h2 em{font-weight:400;color:var(--sage)}
-.ledger{margin-top:70px;border-top:1px solid var(--line-light)}
+
+.ledger{grid-area:ledger;margin-top:clamp(44px,6vh,72px);border-top:1px solid var(--line-light)}
 .row{
-  display:grid;grid-template-columns:200px 1fr 220px;gap:40px;align-items:center;
-  padding:54px 0;border-bottom:1px solid var(--line-light);
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(20px,2.6vw,46px);align-items:start;
+  padding:clamp(32px,4.2vh,52px) 0;border-bottom:1px solid var(--line-light);
   transition:background .4s;
 }
 .row:hover{background:rgba(207,215,199,.04)}
-.row .tag{font-weight:700;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted-light)}
-.row .claim{font-family:var(--font-secondary);font-style:italic;font-weight:400;font-size:clamp(24px,3vw,38px);line-height:1.22;letter-spacing:-0.015em;color:var(--sage-bright)}
+.row-lead{display:flex;flex-direction:column;gap:9px}
+.row .tag{font-weight:700;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted-light)}
+.row .metric{
+  font-family:var(--font-primary);font-weight:800;letter-spacing:var(--track);
+  font-size:clamp(34px,3.7vw,52px);line-height:.92;color:var(--sage-bright);
+}
+.row .metric-unit{font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light)}
+/* the body sits quiet beside the figure, the way the reference's row copy does */
+.row .claim{
+  font-family:var(--font-secondary);font-style:italic;font-weight:400;
+  font-size:clamp(18px,1.65vw,24px);line-height:1.34;letter-spacing:-0.01em;
+  color:var(--sage-bright);padding-top:2px;
+}
 .row .claim s{text-decoration-color:rgba(159,176,166,.8);color:var(--muted-light)}
-.row .metric{text-align:right}
-.row .metric b{display:block;font-family:var(--font-primary);font-weight:800;letter-spacing:var(--track);font-size:clamp(40px,4.4vw,62px);line-height:1;color:var(--sage-bright)}
-.row .metric span{font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light)}
+
+@media (max-width:860px){
+  /* the rail lifts above the headline and lies flat across the top */
+  .why-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"rail" "head" "ledger"}
+  .why-rail{align-items:center;margin-bottom:clamp(26px,4vh,40px)}
+  .why-note{font-size:clamp(19px,4.4vw,24px)}
+  .why-note svg{width:56px}
+  .row{grid-template-columns:minmax(0,1fr);gap:16px}
+  .row-lead{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:10px 14px}
+  .row .metric{font-size:clamp(30px,8vw,44px)}
+}
 
 /* ---------- testimonials (looping carousel) ---------- */
 .testi-section{padding:clamp(40px,6vh,80px) 0 clamp(150px,19vh,250px)}
