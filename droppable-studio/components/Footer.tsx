@@ -28,6 +28,9 @@ export default function Footer() {
             <a href={LINKS.instagram} target="_blank" rel="noopener">
               Instagram
             </a>
+            <a href={LINKS.youtube} target="_blank" rel="noopener">
+              YouTube
+            </a>
           </div>
         </div>
       </div>
@@ -63,6 +66,16 @@ export default function Footer() {
                 <rect x="2.5" y="2.5" width="19" height="19" rx="5.2" />
                 <circle cx="12" cy="12" r="4.4" />
                 <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a
+              href={LINKS.youtube}
+              target="_blank"
+              rel="noopener"
+              aria-label="YouTube"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M23.5 6.9a3.02 3.02 0 0 0-2.12-2.14C19.5 4.25 12 4.25 12 4.25s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.9C0 8.79 0 12 0 12s0 3.21.5 5.1a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.21 24 12 24 12s0-3.21-.5-5.1zM9.6 15.57V8.43L15.82 12 9.6 15.57z" />
               </svg>
             </a>
             <a

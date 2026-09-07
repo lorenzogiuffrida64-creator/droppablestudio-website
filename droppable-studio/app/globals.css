@@ -334,7 +334,7 @@ section{position:relative}
 .why-rail{grid-area:rail;display:flex;align-items:flex-start;gap:20px}
 .why-mark{display:flex;flex-direction:column;gap:7px}
 .why-mark-top{display:flex;align-items:flex-start;gap:9px}
-.why-mark-top img{height:34px;width:auto;display:block}
+.why-mark-top img{height:42px;width:auto;display:block}
 /* the stamp lines: the brand carries no mono cut, so wide-tracked SF Pro at a
    tiny size does the typewriter-metadata job the reference gives to Haffer Mono */
 .why-mark-flag,.why-mark-line{
@@ -342,7 +342,7 @@ section{position:relative}
   font-size:9.5px;letter-spacing:.2em;line-height:1.35;text-transform:uppercase;
   color:var(--muted-light);white-space:nowrap;
 }
-.why-mark-flag{padding-top:2px}
+.why-mark-flag{padding-top:4px}
 .why-mark-line i{font-style:normal;color:var(--sage)}
 
 /* the annotation — the reference's marker scrawl, spoken in the brand's italic */
@@ -397,7 +397,10 @@ section{position:relative}
   .why-note{font-size:clamp(19px,4.4vw,24px)}
   .why-note svg{width:56px}
   .row{grid-template-columns:minmax(0,1fr);gap:16px}
-  .row-lead{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:10px 14px}
+  /* tag and figure share a baseline, the unit always drops to its own line so
+     all three rows break the same way regardless of label length */
+  .row-lead{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:8px 14px}
+  .row .metric-unit{flex:0 0 100%}
   .row .metric{font-size:clamp(30px,8vw,44px)}
 }
 

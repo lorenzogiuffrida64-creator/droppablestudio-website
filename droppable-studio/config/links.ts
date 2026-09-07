@@ -5,6 +5,7 @@
 export const LINKS = {
   instagram:
     "https://www.instagram.com/droppablestudio?igsh=MXBmYmkyeGNzb3QzeQ%3D%3D&utm_source=qr",
+  youtube: "https://youtube.com/@droppablestudio?si=1IrEH2GTRg_XjA-O",
   /* internal custom inquiry form (replaces the external Youform link) */
   inquiry: "/inquiry",
   /* internal pre-order flow for the Skool community (under construction) */
