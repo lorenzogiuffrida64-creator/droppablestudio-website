@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
+import Skel from "@/components/Skel";
 import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 /* The reel fan — cards pinned along a shallow arc, drifting right to left.
@@ -30,6 +31,11 @@ const SHRINK = 0.07; // how much an edge card gives up to the one at the centre
 const REACH = 1; // clamp on p: a card reaches full lean at the rail's edge and
                  // holds it off-screen, so the fan never exceeds DESIGN.md's range
 const DURATION = 40; // seconds per full list — matches the studio's other rails
+const MAX_PLAYING = 6; // decoders are the bottleneck — only the cards in view play
+const SYNC_MS = 400; // how often playback is re-matched to what's in view
+
+const posterFor = (video: string) =>
+  `/posters/${video.split("/").pop()!.replace(/\.mp4$/, ".jpg")}`;
 
 export default function WorkFan({ items }: { items: WorkItem[] }) {
   const railRef = useRef<HTMLDivElement>(null);
@@ -38,7 +44,8 @@ export default function WorkFan({ items }: { items: WorkItem[] }) {
 
   /* Card geometry, cached: the per-frame pass writes transforms only, never
      reads layout, so the fan costs no reflow while it drifts. */
-  const cardsRef = useRef<{ el: HTMLElement; mid: number }[]>([]);
+  const cardsRef = useRef<{ el: HTMLElement; mid: number; half: number }[]>([]);
+  const onScreenRef = useRef(false); // is the fan anywhere near the viewport
   const dropRef = useRef(DROP); // scaled to the rail on small screens
 
   // Suspend the drift for `ms` whenever the user drives the rail themselves.
@@ -75,19 +82,19 @@ export default function WorkFan({ items }: { items: WorkItem[] }) {
     const base = track.offsetLeft; // put offsets in the rail's scroll space
     cardsRef.current = Array.from(
       rail.querySelectorAll<HTMLElement>(".fan-card"),
-    ).map((el) => ({ el, mid: el.offsetLeft - base + el.offsetWidth / 2 }));
+    ).map((el) => ({
+      el,
+      mid: el.offsetLeft - base + el.offsetWidth / 2,
+      half: el.offsetWidth / 2,
+    }));
     shape();
   }, [shape]);
 
-  // Preview playback, reduced-motion flag, and the first measure.
+  // Reduced-motion flag and the first measure.
   useEffect(() => {
     reduceRef.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    railRef.current?.querySelectorAll("video").forEach((v) => {
-      if (reduceRef.current) v.pause();
-      else v.play().catch(() => {});
-    });
     measure();
     // videos settle their box once metadata lands, so re-measure after that
     const rail = railRef.current;
@@ -98,6 +105,52 @@ export default function WorkFan({ items }: { items: WorkItem[] }) {
       window.removeEventListener("resize", measure);
     };
   }, [measure]);
+
+  /* Playback. The track holds every reel twice (30 videos); letting them all
+     autoplay made the browser decode 30 streams at once and starved the main
+     thread — every click on the page lagged. Now nothing loads until needed
+     (preload="none" + poster), only the few cards actually inside the rail play,
+     and everything pauses when the fan leaves the viewport or the tab hides.
+     Positions come from the cached geometry, never a layout read. */
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    const sync = () => {
+      const live =
+        onScreenRef.current && !document.hidden && !reduceRef.current;
+      const reach = rail.clientWidth / 2;
+      const mid = rail.scrollLeft + reach;
+      let playing = 0;
+      cardsRef.current.forEach((c) => {
+        const video = c.el.querySelector("video");
+        if (!video) return;
+        const inView = Math.abs(c.mid - mid) < reach + c.half;
+        if (live && inView && playing < MAX_PLAYING) {
+          playing += 1;
+          if (video.paused) video.play().catch(() => {});
+        } else if (!video.paused) {
+          video.pause();
+        }
+      });
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreenRef.current = entry.isIntersecting;
+        sync();
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(rail);
+    const id = window.setInterval(() => onScreenRef.current && sync(), SYNC_MS);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      io.disconnect();
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
 
   /* The drift. Under reduced motion there is no loop at all — the fan is shaped
      once above and then only when the user scrolls the rail themselves. */
@@ -120,6 +173,11 @@ export default function WorkFan({ items }: { items: WorkItem[] }) {
     const tick = (now: number) => {
       const dt = (now - last) / 1000;
       last = now;
+      if (!onScreenRef.current) {
+        // off-screen: no drift, no style writes — just wait to be seen again
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       if (now >= pausedUntilRef.current && half > 0) {
         rail.scrollLeft += (half / DURATION) * dt;
         if (rail.scrollLeft >= half) rail.scrollLeft -= half; // seamless wrap
@@ -191,15 +249,16 @@ export default function WorkFan({ items }: { items: WorkItem[] }) {
       aria-hidden={hidden || undefined}
       style={{ "--ar": item.aspect } as CSSProperties}
     >
+      {item.video && <Skel />}
       {item.video ? (
         <video
           className="fan-media"
           src={`${item.video}?v=${REELS_VERSION}`}
+          poster={posterFor(item.video)}
           muted
           loop
           playsInline
-          autoPlay
-          preload="metadata"
+          preload="none"
         />
       ) : (
         <span className={`fan-media ph ph-${item.ph}`} aria-hidden="true" />

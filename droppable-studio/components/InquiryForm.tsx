@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { isValidDialCode } from "@/config/countryCodes";
 import CountryCodeField from "@/components/CountryCodeField";
+import Skel from "@/components/Skel";
 import { LINKS } from "@/config/links";
 
 /* budget tiers — kept exactly as the original form */
@@ -534,13 +535,16 @@ export default function InquiryForm() {
                       ? "You're booked, the invite is in your inbox. One last question and you're done."
                       : "Pick a slot for your 1:1 strategy call, or skip ahead and we'll reach out."}
                   </p>
-                  <iframe
-                    className="inq-calendly"
-                    title="Book a 1:1 strategy call"
-                    src={calendlySrc(answers)}
-                    loading="lazy"
-                    data-step-focus
-                  />
+                  <div className="inq-calendly-wrap">
+                    <Skel light />
+                    <iframe
+                      className="inq-calendly"
+                      title="Book a 1:1 strategy call"
+                      src={calendlySrc(answers)}
+                      loading="lazy"
+                      data-step-focus
+                    />
+                  </div>
                 </div>
               )}
 

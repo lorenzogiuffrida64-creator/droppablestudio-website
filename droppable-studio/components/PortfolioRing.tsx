@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
+import Skel from "@/components/Skel";
 import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 /* ============================================================
@@ -320,6 +321,7 @@ export default function PortfolioRing({
                 aria-label={`Open the ${item.brand} reel`}
                 onClick={(e) => open(i, e.currentTarget)}
               >
+                <Skel />
                 <video
                   className="pf-media"
                   src={`${previewFor(item.video ?? "")}?v=${REELS_VERSION}`}
@@ -364,6 +366,7 @@ export default function PortfolioRing({
               className="pf-lb-card"
               style={{ "--a": ratio(shown.aspect) } as CSSProperties}
             >
+              <Skel />
               <video
                 className="pf-media"
                 src={`${shown.video}?v=${REELS_VERSION}`}

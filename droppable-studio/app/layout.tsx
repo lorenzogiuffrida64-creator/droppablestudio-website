@@ -13,7 +13,7 @@ const inter = Inter({
 
 /* Self-hosted Apple Garamond Italic — the brand's secondary voice */
 const appleGaramond = localFont({
-  src: "./fonts/AppleGaramond-Italic.ttf",
+  src: "./fonts/AppleGaramond-Italic.woff2",
   style: "italic",
   weight: "400",
   variable: "--font-garamond",
@@ -21,11 +21,14 @@ const appleGaramond = localFont({
 });
 
 /* Self-hosted SF Pro Text for non-Apple platforms; Apple devices hit the
-   native "-apple-system" / "SF Pro Text" entries earlier in the stack. */
+   native "-apple-system" / "SF Pro Text" entries earlier in the stack, so it
+   is not preloaded — only browsers that actually fall through fetch it.
+   Latin-subset WOFF2 (~35 KB; the full OTF master was 6 MB). */
 const sfPro = localFont({
-  src: "./fonts/SF-Pro-Text-Regular.otf",
+  src: "./fonts/SF-Pro-Text-Regular.woff2",
   variable: "--font-sf-pro",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

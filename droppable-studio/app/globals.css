@@ -49,7 +49,7 @@ em, .serif{font-family:var(--font-secondary);font-style:italic;font-weight:400;l
 
 /* film grain */
 .grain{
-  position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;
+  position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -248,16 +248,22 @@ section{position:relative}
   display:inline-flex;align-items:center;gap:6px;
   font-weight:700;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:#3DDC84;
-  background:rgba(11,20,33,.5);backdrop-filter:blur(6px);
+  /* solid tint instead of backdrop-filter: 30 chips re-blurring playing video
+     every frame was a real GPU cost for a 9px label */
+  background:rgba(11,20,33,.68);
   border:1px solid rgba(61,220,132,.45);border-radius:999px;padding:5px 9px;
 }
 .reel-live i{
-  width:6px;height:6px;border-radius:50%;background:#3DDC84;
-  box-shadow:0 0 0 0 rgba(61,220,132,.55);animation:reel-pulse 1.8s ease-out infinite;
+  position:relative;width:6px;height:6px;border-radius:50%;background:#3DDC84;
+}
+/* the pulse ring — transform + opacity only, so it never repaints */
+.reel-live i::after{
+  content:"";position:absolute;inset:0;border-radius:50%;background:rgba(61,220,132,.55);
+  animation:reel-pulse 1.8s ease-out infinite;
 }
 @keyframes reel-pulse{
-  0%{box-shadow:0 0 0 0 rgba(61,220,132,.55)}
-  70%,100%{box-shadow:0 0 0 7px rgba(61,220,132,0)}
+  0%{transform:scale(1);opacity:1}
+  70%,100%{transform:scale(3.3);opacity:0}
 }
 
 .work-note{
@@ -316,6 +322,25 @@ section{position:relative}
 /* the arrows centre on the cards, not on the rail's lopsided padding box, and
    clear the fan — WorkFan drives card z-index up to 60 as they near the centre */
 .work-fan .work-arrow{top:calc(var(--fan-top) + var(--fan-h) / 2);z-index:70}
+
+/* ---------- skeleton shimmer (media still loading) ---------- */
+/* Sits under a reel's <video>: a frame-less video paints transparent, so the
+   sweep shows through until the first frame / poster lands, then <Skel> fades
+   it out. Brand-toned sweep, transform-only motion. */
+.skel{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  background:var(--blu-ink);transition:opacity .6s var(--ease);
+}
+.skel::after{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:60%;
+  background:linear-gradient(100deg,transparent 0%,rgba(207,215,199,.09) 50%,transparent 100%);
+  transform:translateX(-100%);animation:skel-sweep 1.7s var(--ease) infinite;
+}
+.skel--light{background:var(--sage)}
+.skel--light::after{background:linear-gradient(100deg,transparent 0%,rgba(234,240,227,.75) 50%,transparent 100%)}
+.skel.is-done{opacity:0}
+.skel.is-done::after{animation:none}
+@keyframes skel-sweep{to{transform:translateX(270%)}}
 
 /* ---------- why AI ledger ---------- */
 /* Composition recreated from the Osmo reference (DESIGN.md): a narrow left rail
@@ -660,6 +685,8 @@ footer :focus-visible{outline-color:var(--sage)}
 .inq-note{margin-top:12px;max-width:46ch;color:var(--muted);font-size:15px;font-weight:500;line-height:1.45;animation:inq-step-in .35s var(--ease) both}
 .inq-contact{display:grid;grid-template-columns:1fr 1fr;gap:26px 24px}
 .inq-call .inq-note{margin-top:0}
+.inq-calendly-wrap{position:relative}
+.inq-calendly-wrap .skel{z-index:1;border-radius:14px}
 .inq-calendly{display:block;width:100%;height:700px;border:0;border-radius:14px;background:var(--sage)}
 
 /* navigation */
@@ -811,6 +838,7 @@ footer :focus-visible{outline-color:var(--sage)}
   .inq-q{margin-bottom:26px;max-width:none}
   .inq-fields,.inq-contact{grid-template-columns:1fr;gap:22px}
   .inq-calendly{height:780px;border-radius:10px}
+  .inq-calendly-wrap .skel{border-radius:10px}
 
   /* segmented control → full-width stacked rows: big, legible tap targets */
   .seg{flex-direction:column;width:100%;border-radius:16px}
@@ -1106,6 +1134,8 @@ footer :focus-visible{outline-color:var(--sage)}
   .testi-card[aria-hidden="true"],.reel[aria-hidden="true"],
   .fan-card[aria-hidden="true"]{display:none}
   .scroll-hint b{animation:none}
+  .reel-live i::after{animation:none;opacity:0}
+  .skel::after{animation:none;opacity:0}
   .rv{opacity:1;transform:none;transition:none}
   .foot-king{animation:none !important;transform:none !important}
   *{transition-duration:.001s !important}

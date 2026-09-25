@@ -279,6 +279,22 @@ export default function DropCanvas() {
     window.addEventListener("resize", resize);
     resize();
 
+    /* scrollable height, cached — reading scrollHeight every frame forces a
+       layout whenever anything else (the reel fan) touched styles that frame */
+    const doc = document.documentElement;
+    let scrollMax = 1;
+    const measureScroll = () =>
+      (scrollMax = Math.max(1, doc.scrollHeight - window.innerHeight));
+    measureScroll();
+    const ro = new ResizeObserver(measureScroll);
+    ro.observe(document.body);
+    window.addEventListener("resize", measureScroll);
+
+    /* half the visible frame height at z=0 (camera z=6, fov 45) — the drop is
+       fully out of view once its extent clears this, e.g. parked under the band */
+    const HALF_VIEW = 6 * Math.tan((45 / 2) * (Math.PI / 180));
+    let wasOut = false;
+
     const cur = {
       x: keysRef.current[0].x,
       y: keysRef.current[0].y,
@@ -341,6 +357,7 @@ export default function DropCanvas() {
       /* paused on the drop-free pre-order page — keep the RAF alive (so it
          resumes on navigation back) but skip all work and rendering */
       if (hiddenRef.current) {
+        wasOut = false; // repaint on return — the canvas may hold a stale frame
         lastTime = now;
         rafId = requestAnimationFrame(frame);
         return;
@@ -349,8 +366,7 @@ export default function DropCanvas() {
       lastTime = now;
       clockT += dt;
 
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const max = scrollMax;
       const p = Math.min(1, Math.max(0, window.scrollY / max));
       const k = sampleKeys(p, activeKeys(max));
 
@@ -377,14 +393,21 @@ export default function DropCanvas() {
         m * Math.PI * 2 +
         (Math.sin(clockT * 0.3) * 0.25 + mouse.y * 0.15) * (1 - m * 0.7);
 
-      if (!reduceMotion) displace(clockT, 1, m);
-      renderer.render(scene, camera);
+      /* parked out of frame (under the dark band, sunk before the FAQ): skip
+         the vertex pass and the draw. The first out-of-frame frame still
+         renders, so the canvas is left clear rather than holding a sliver. */
+      const reach = cur.s * 1.3 + 0.2; // drop/pawn extent + pointer sway
+      const out = Math.abs(drop.position.y) - reach > HALF_VIEW;
+      if (!out || !wasOut) {
+        if (!reduceMotion) displace(clockT, 1, m);
+        renderer.render(scene, camera);
+      }
+      wasOut = out;
       rafId = requestAnimationFrame(frame);
     }
 
     const onReducedScroll = () => {
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const max = scrollMax;
       const p = Math.min(1, window.scrollY / max);
       const k = sampleKeys(p, activeKeys(max));
       const m =
@@ -421,6 +444,8 @@ export default function DropCanvas() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", measureScroll);
+      ro.disconnect();
       window.removeEventListener("scroll", onReducedScroll);
       geo.dispose();
       mat.matcap?.dispose();

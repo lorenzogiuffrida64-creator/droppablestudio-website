@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Skel from "@/components/Skel";
 import { REELS_VERSION, type WorkItem } from "@/config/work";
 
 type WorkTileProps = {
@@ -16,6 +17,7 @@ export default function WorkTile({ item, hidden }: WorkTileProps) {
       style={{ "--ar": item.aspect } as CSSProperties}
     >
       <span className="reel-frame">
+        {item.video && <Skel />}
         {item.video ? (
           <video
             className="reel-media"
