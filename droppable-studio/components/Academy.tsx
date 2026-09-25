@@ -28,7 +28,7 @@ export default function Academy() {
               <ul>
                 <li>Monthly drops: Claude Code guides, skills &amp; breakdowns</li>
                 <li>Beginner roadmap to generative AI</li>
-                <li>Share your work, get feedback — a 400+ community</li>
+                <li>Share your work, get feedback — a 560+ community</li>
               </ul>
               <a
                 className="btn ghost"
@@ -52,6 +52,7 @@ export default function Academy() {
               <h3>The Droppable Method</h3>
               <p className="path-lede">From 0 to hero in generative AI.</p>
               <ul>
+                <li>78 lessons</li>
                 <li>Every prompt, tool &amp; render setting behind a real Droppable campaign</li>
                 <li>Weekly drops: Claude Code, AI tools &amp; insider secrets</li>
                 <li>Open your first AI marketing agency — scale it to $10k/mo</li>

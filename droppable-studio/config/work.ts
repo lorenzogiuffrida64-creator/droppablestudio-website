@@ -31,6 +31,7 @@ export type WorkItem = {
 };
 
 export const WORK: WorkItem[] = [
+  { ph: 5, brand: "Droppable",    category: "Artistic",    adId: "AD-000", duration: "0:10", platform: "IG Reels", ctr: "+291%", video: "/reels/artistic.mp4",          aspect: 4 / 3 },
   { ph: 1, brand: "Rolex",        category: "Luxury",      adId: "AD-001", duration: "0:27", platform: "Meta",     ctr: "+268%", video: "/reels/rolex.mp4",             aspect: 4 / 3 },
   { ph: 4, brand: "Freelico",     category: "Tech",        adId: "AD-304", duration: "0:12", platform: "TikTok",   ctr: "+221%", video: "/reels/freelico.mp4",          aspect: 5 / 4 },
   { ph: 2, brand: "Vemue",        category: "Fashion",     adId: "AD-912", duration: "0:09", platform: "IG Reels", ctr: "+247%", video: "/reels/vemueclo.mp4",          aspect: 4 / 3 },

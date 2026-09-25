@@ -7,6 +7,7 @@ import WhyLedger from "@/components/WhyLedger";
 // import Testimonials from "@/components/Testimonials"; // hidden for now
 import InquiryCta from "@/components/InquiryCta";
 import Academy from "@/components/Academy";
+import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import Reveals from "@/components/Reveals";
 
@@ -27,6 +28,7 @@ export default function Home() {
 
       <InquiryCta />
       <Academy />
+      <Faq />
       <Footer />
       <Reveals />
     </>

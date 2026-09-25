@@ -35,7 +35,8 @@ A 3D liquid drop (Three.js r128, `MeshMatcapMaterial` with a procedurally genera
 blue/sage matcap, displaced icosahedron) that travels a choreographed path down the page
 as the user scrolls — beside the hero headline, left at the manifesto, dives under the
 dark band, resurfaces HUGE behind the inquiry CTA, then accompanies the Academy section.
-Waypoints live in the `KEYS` array in the inline script. This is the brand's "stop-scroll"
+Waypoints live in the `KEYS` array in `DropCanvas.tsx`; keys after the hero are anchored to
+sections (`at` selector) and resolved to scroll progress at runtime. This is the brand's "stop-scroll"
 moment; do not remove or simplify it.
 
 ## Page structure (order = the funnel, do not reorder)
@@ -49,7 +50,9 @@ moment; do not remove or simplify it.
    - 03 / Why AI — ledger rows: Budget (−60%), Speed (72h), Re-hook (∞ hook variations)
 6. Inquiry CTA — "Your brand, in the feed, *by next week.*" → external form
 7. 04 / The Academy — two cards: Discord (free, ghost button) + Skool (featured, solid button)
-8. Footer (blu-deep) — serif-headed link columns, then a giant brand lockup (chess-king
+8. FAQ — "Before you *ask.*": pre-objection handling for agency leads (native `<details>`,
+   content in `config/faq.ts`, FAQPage JSON-LD). The drop sinks away before it.
+9. Footer (blu-deep) — serif-headed link columns, then a giant brand lockup (chess-king
    mark + static "Droppable" wordmark): on scroll-into-view the king drops in with a
    cartoon squash-and-stretch bounce (static under `prefers-reduced-motion`),
    then base bar (©, social icons)

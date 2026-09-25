@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { isValidDialCode } from "@/config/countryCodes";
 import CountryCodeField from "@/components/CountryCodeField";
+import { LINKS } from "@/config/links";
 
 /* budget tiers — kept exactly as the original form */
 const BUDGETS = ["400-1.5k$", "1.5k-5k$", "5k-20k$", "20k-50k$"];
@@ -39,7 +40,8 @@ type Step =
       multiline?: boolean;
       required: boolean;
     }
-  | { kind: "contact"; q: ReactNode };
+  | { kind: "contact"; q: ReactNode }
+  | { kind: "call"; q: ReactNode };
 
 /* the 1–10 scales render as compact wrapping chips */
 const SCALE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -177,6 +179,14 @@ const STEPS: Step[] = [
     ),
   },
   {
+    kind: "call",
+    q: (
+      <>
+        Work with <em>us</em>
+      </>
+    ),
+  },
+  {
     kind: "text",
     name: "Why Droppable specifically?",
     q: (
@@ -211,6 +221,31 @@ export default function InquiryForm() {
   const [answers, setAnswers] = useState<Answers>({ "Phone Code": "+39" });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
+  /* the Calendly booking's API URIs — sent with the inquiry so the server can
+     fold the call details into the same notification email */
+  const [booking, setBooking] = useState<{
+    event: string;
+    invitee: string;
+  } | null>(null);
+  const booked = booking !== null;
+
+  /* Calendly posts "calendly.event_scheduled" to the parent window once a
+     slot is booked, carrying the scheduled event + invitee URIs */
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (
+        e.origin === "https://calendly.com" &&
+        e.data?.event === "calendly.event_scheduled"
+      ) {
+        setBooking({
+          event: String(e.data.payload?.event?.uri ?? ""),
+          invitee: String(e.data.payload?.invitee?.uri ?? ""),
+        });
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
 
   const total = STEPS.length;
   const current = STEPS[step];
@@ -263,7 +298,7 @@ export default function InquiryForm() {
       ) {
         e[`${s.name} — other`] = "Please specify";
       }
-    } else if (s.required) {
+    } else if (s.kind === "text" && s.required) {
       if (!(answers[s.name] ?? "").trim()) e[s.name] = "Required";
     }
     return e;
@@ -292,7 +327,14 @@ export default function InquiryForm() {
 
     /* fold the country code into the single "Phone Number" value so the
        notification reads "Phone Number: +39 328 827 3008" */
-    const payload: Answers = { ...answers };
+    const payload: Answers = {
+      ...answers,
+      "Strategy call": booked ? "Booked via Calendly" : "Not booked",
+      ...(booking && {
+        _calendlyEvent: booking.event,
+        _calendlyInvitee: booking.invitee,
+      }),
+    };
 
     /* fold any "Other" free-text into its choice value, then drop the helper
        key — so the notification reads e.g. "Industry: Other — Pet care" */
@@ -367,8 +409,7 @@ export default function InquiryForm() {
               We&apos;ll be <em>in touch.</em>
             </h2>
             <p>
-              Thank you, your inquiry just landed with the studio. We review
-              every brief personally and reply within 1–2 business days.
+              Thank you, your inquiry just landed with the studio.
             </p>
             <Link className="btn" href="/">
               Back to site
@@ -483,6 +524,23 @@ export default function InquiryForm() {
                         {current.note.text}
                       </p>
                     )}
+                </div>
+              )}
+
+              {current.kind === "call" && (
+                <div className="inq-answer inq-call">
+                  <p className="inq-note">
+                    {booked
+                      ? "You're booked, the invite is in your inbox. One last question and you're done."
+                      : "Pick a slot for your 1:1 strategy call, or skip ahead and we'll reach out."}
+                  </p>
+                  <iframe
+                    className="inq-calendly"
+                    title="Book a 1:1 strategy call"
+                    src={calendlySrc(answers)}
+                    loading="lazy"
+                    data-step-focus
+                  />
                 </div>
               )}
 
@@ -640,6 +698,23 @@ export default function InquiryForm() {
       </div>
     </section>
   );
+}
+
+/* inline Calendly embed, prefilled with the contact step's name + email and
+   tinted to the brand (colors apply on Calendly paid plans, ignored otherwise) */
+function calendlySrc(answers: Answers) {
+  const params = new URLSearchParams({
+    embed_type: "Inline",
+    embed_domain:
+      typeof window !== "undefined" ? window.location.host : "droppablestudio.com",
+    hide_gdpr_banner: "1",
+    background_color: "cfd7c7",
+    text_color: "1b2c40",
+    primary_color: "355070",
+    name: `${answers["First Name"] ?? ""} ${answers["Last Name"] ?? ""}`.trim(),
+    email: (answers["Email"] ?? "").trim(),
+  });
+  return `${LINKS.calendly}?${params}`;
 }
 
 const idFor = (name: string) =>

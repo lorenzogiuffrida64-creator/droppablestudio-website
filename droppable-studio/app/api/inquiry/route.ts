@@ -10,6 +10,11 @@
  *   INQUIRY_TO       — comma-separated recipient emails
  *   INQUIRY_FROM     — verified sender, e.g. "Droppable Studio <inquiries@yourdomain.com>"
  *                      (defaults to Resend's onboarding sender for quick testing)
+ *
+ * Optional:
+ *   CALENDLY_TOKEN   — Calendly personal access token. When set and the visitor
+ *                      booked a call in the form, the booking (time, invitee,
+ *                      meeting link, answers) is folded into this same email.
  */
 
 export const runtime = "nodejs";
@@ -22,6 +27,7 @@ const FIELD_ORDER = [
   "Email",
   "Phone Number",
   "Company (preferred)",
+  "Strategy call",
   "Industry",
   "What does your brand do, and who is it for?",
   "#1 result wanted from this campaign",
@@ -58,6 +64,82 @@ const esc = (s: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+/* ---------- Calendly booking → email rows ----------
+   The form sends the event + invitee API URIs from Calendly's
+   "calendly.event_scheduled" message; we resolve them with the API so the
+   booking lands inside the inquiry email instead of a separate one. Only
+   api.calendly.com URIs are fetched (the values come from the browser). */
+const CALENDLY_API = "https://api.calendly.com/";
+
+async function calendlyGet(uri: string, token: string) {
+  if (!uri.startsWith(CALENDLY_API)) return null;
+  const res = await fetch(uri, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.error("Calendly fetch failed", res.status, uri);
+    return null;
+  }
+  return (await res.json())?.resource ?? null;
+}
+
+async function calendlyRows(
+  eventUri: string,
+  inviteeUri: string
+): Promise<{ k: string; v: string }[]> {
+  const token = process.env.CALENDLY_TOKEN;
+  if (!token || !eventUri) return [];
+  try {
+    const [event, invitee] = await Promise.all([
+      calendlyGet(eventUri, token),
+      inviteeUri ? calendlyGet(inviteeUri, token) : null,
+    ]);
+    if (!event) return [];
+
+    const tz: string = invitee?.timezone || "Europe/Rome";
+    const fmt = (iso: string, zone: string) =>
+      new Date(iso).toLocaleString("en-GB", {
+        timeZone: zone,
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZoneName: "short",
+      });
+
+    const rows: { k: string; v: string }[] = [
+      { k: "Call", v: event.name ?? "Strategy call" },
+      { k: "Call time (studio)", v: fmt(event.start_time, "Europe/Rome") },
+    ];
+    if (tz !== "Europe/Rome") {
+      rows.push({ k: "Call time (lead)", v: fmt(event.start_time, tz) });
+    }
+    const loc = event.location;
+    const where = loc?.join_url || loc?.location || loc?.type;
+    if (where) rows.push({ k: "Call location", v: String(where) });
+    if (invitee?.email) {
+      rows.push({
+        k: "Booked by",
+        v: `${invitee.name ?? ""} <${invitee.email}>`.trim(),
+      });
+    }
+    for (const qa of invitee?.questions_and_answers ?? []) {
+      if (qa?.answer) rows.push({ k: String(qa.question), v: String(qa.answer) });
+    }
+    if (invitee?.reschedule_url) {
+      rows.push({ k: "Reschedule", v: invitee.reschedule_url });
+    }
+    if (invitee?.cancel_url) rows.push({ k: "Cancel", v: invitee.cancel_url });
+    return rows;
+  } catch (err) {
+    console.error("Calendly lookup error", err);
+    return [];
+  }
+}
 
 export async function POST(req: Request) {
   let data: Record<string, unknown>;
@@ -99,6 +181,16 @@ export async function POST(req: Request) {
   }
 
   const rows = FIELD_ORDER.map((k) => ({ k, v: get(k) || "—" }));
+
+  /* booking details sit right under the "Strategy call" line */
+  const callRows = await calendlyRows(
+    get("_calendlyEvent"),
+    get("_calendlyInvitee")
+  );
+  if (callRows.length) {
+    const at = rows.findIndex((r) => r.k === "Strategy call") + 1;
+    rows.splice(at, 0, ...callRows);
+  }
 
   const text = [
     "Hi,",

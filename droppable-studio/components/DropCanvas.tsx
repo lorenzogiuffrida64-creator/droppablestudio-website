@@ -4,22 +4,31 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import * as THREE from "three";
 
-/* path waypoints: the drop guides you down the funnel */
-const KEYS = [
+/* path waypoints: the drop guides you down the funnel. `p` is page scroll
+   progress (0–1). Keys past the hero carry an `at` anchor instead, resolved at
+   runtime from the section's real position (see resolveKeys), so the path stays
+   in step with the layout on every viewport and whenever sections are added;
+   their `p` is only the fallback if the anchor is missing. */
+const KEYS: Key[] = [
   { p: 0.0, x: 0.0, y: -0.05, s: 1.45 }, // centered behind the hero headline
   { p: 0.07, x: 0.0, y: 0.35, s: 1.1 },
   { p: 0.13, x: -1.85, y: 0.1, s: 0.62 }, // left at the manifesto
-  { p: 0.2, x: 0.0, y: -3.8, s: 0.45 }, // dives under the dark band (band top ≈ 0.22)
-  { p: 0.66, x: 0.0, y: -3.8, s: 0.45 }, // held under the longer band (work→why→testimonials)
-  { p: 0.75, x: 0.0, y: -0.15, s: 1.35 }, // resurfaces HUGE behind the CTA (CTA ≈ 0.73)
-  { p: 0.85, x: 2.05, y: 0.1, s: 0.55 }, // accompanies the Academy (≈ 0.85)
-  { p: 1.0, x: 2.05, y: -2.6, s: 0.4 },
+  { p: 0.2, x: 0.0, y: -3.8, s: 0.45 }, // dives under the dark band
+  // held under the band until its bottom edge enters the viewport
+  { p: 0.45, at: ".dark", pos: "end", x: 0.0, y: -3.8, s: 0.45 },
+  // resurfaces HUGE behind the CTA
+  { p: 0.55, at: "#contact", pos: "center", x: 0.0, y: -0.15, s: 1.35 },
+  // accompanies the Academy
+  { p: 0.72, at: "#academy", pos: "center", x: 2.05, y: 0.1, s: 0.55 },
+  // sinks away before the FAQ, so it never sits behind the answers
+  { p: 0.84, at: "#faq", pos: "start", off: -0.35, x: 2.05, y: -3.8, s: 0.4 },
+  { p: 1.0, x: 2.05, y: -3.8, s: 0.4 },
 ];
 
 /* inquiry route: the pawn is already formed and stays a calm companion to the
    right of the form column — prominent beside the heading, drifting up out of
    the way while you fill the fields, then resurfacing near the submit button */
-const KEYS_INQUIRY = [
+const KEYS_INQUIRY: Key[] = [
   { p: 0.0, x: 2.1, y: 0.15, s: 1.25 },
   { p: 0.4, x: 2.55, y: 0.6, s: 0.82 },
   { p: 0.75, x: 2.35, y: 0.2, s: 1.0 },
@@ -28,7 +37,7 @@ const KEYS_INQUIRY = [
 
 /* narrow screens have no room beside the single-column form, so the pawn is a
    small accent at the very top that drifts up and out of frame as you scroll */
-const KEYS_INQUIRY_MOBILE = [
+const KEYS_INQUIRY_MOBILE: Key[] = [
   { p: 0.0, x: 1.5, y: 2.05, s: 0.5 },
   { p: 0.14, x: 1.6, y: 3.8, s: 0.46 },
   { p: 1.0, x: 1.6, y: 4.0, s: 0.46 },
@@ -94,7 +103,42 @@ function smoothstep(a: number, b: number, x: number) {
 const MORPH_START = 0.02,
   MORPH_END = 0.16;
 
-type Key = { p: number; x: number; y: number; s: number };
+type Key = {
+  p: number;
+  x: number;
+  y: number;
+  s: number;
+  at?: string; // anchor selector — overrides p once resolved
+  /* which moment of the anchor: "start" = its top at the viewport top,
+     "center" = centred in the viewport, "end" = its bottom at the viewport bottom */
+  pos?: "start" | "center" | "end";
+  off?: number; // shift, in viewport heights (negative = earlier)
+};
+
+/* turn anchored keys into scroll progress for the current layout; kept
+   monotonic so the sampler never sees keys out of order */
+function resolveKeys(keys: Key[], max: number): Key[] {
+  const vh = window.innerHeight;
+  let prev = -Infinity;
+  return keys.map((k) => {
+    let p = k.p;
+    const el = k.at ? document.querySelector(k.at) : null;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const top = r.top + window.scrollY;
+      const y =
+        k.pos === "end"
+          ? top + r.height - vh
+          : k.pos === "center"
+            ? top + r.height / 2 - vh / 2
+            : top;
+      p = Math.min(1, Math.max(0, (y + (k.off ?? 0) * vh) / max));
+    }
+    p = Math.max(p, prev + 0.001);
+    prev = p;
+    return p === k.p ? k : { ...k, p };
+  });
+}
 
 function sampleKeys(p: number, keys: Key[]) {
   if (p <= keys[0].p) return keys[0];
@@ -274,6 +318,25 @@ export default function DropCanvas() {
 
     let rafId = 0;
 
+    /* the route's keys with anchors resolved; only re-measured when the
+       page height, viewport or key set changes (not every frame) */
+    let resolved: Key[] = [];
+    let resolvedFor = "";
+    function activeKeys(max: number) {
+      const keys =
+        morphRef.current === "pawn" && W < 720
+          ? KEYS_INQUIRY_MOBILE
+          : keysRef.current;
+      const id =
+        (keys === KEYS ? "home" : keys === KEYS_INQUIRY ? "inq" : "inq-m") +
+        ":" + max + ":" + window.innerHeight;
+      if (id !== resolvedFor) {
+        resolved = resolveKeys(keys, max);
+        resolvedFor = id;
+      }
+      return resolved;
+    }
+
     function frame(now: number) {
       /* paused on the drop-free pre-order page — keep the RAF alive (so it
          resumes on navigation back) but skip all work and rendering */
@@ -289,11 +352,7 @@ export default function DropCanvas() {
       const doc = document.documentElement;
       const max = Math.max(1, doc.scrollHeight - window.innerHeight);
       const p = Math.min(1, Math.max(0, window.scrollY / max));
-      const keys =
-        morphRef.current === "pawn" && W < 720
-          ? KEYS_INQUIRY_MOBILE
-          : keysRef.current;
-      const k = sampleKeys(p, keys);
+      const k = sampleKeys(p, activeKeys(max));
 
       const L = reduceMotion ? 1 : 1 - Math.pow(0.0015, dt);
       cur.x += (k.x * xClamp - cur.x) * L;
@@ -327,11 +386,7 @@ export default function DropCanvas() {
       const doc = document.documentElement;
       const max = Math.max(1, doc.scrollHeight - window.innerHeight);
       const p = Math.min(1, window.scrollY / max);
-      const keys =
-        morphRef.current === "pawn" && W < 720
-          ? KEYS_INQUIRY_MOBILE
-          : keysRef.current;
-      const k = sampleKeys(p, keys);
+      const k = sampleKeys(p, activeKeys(max));
       const m =
         morphRef.current === "pawn" ? 1 : smoothstep(MORPH_START, MORPH_END, p);
       displace(0.8, 1, m);
