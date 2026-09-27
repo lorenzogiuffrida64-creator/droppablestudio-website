@@ -11,7 +11,13 @@ import Link from "next/link";
 import { isValidDialCode } from "@/config/countryCodes";
 import CountryCodeField from "@/components/CountryCodeField";
 import Skel from "@/components/Skel";
+import Marquee from "@/components/Marquee";
+import ReelCarousel from "@/components/ReelCarousel";
 import { LINKS } from "@/config/links";
+import { WORK } from "@/config/work";
+
+/* the welcome screen's proof: every live reel, then the brands behind them */
+const SHOWCASE = WORK.filter((w) => Boolean(w.video));
 
 /* budget tiers — kept exactly as the original form */
 const BUDGETS = ["400-1.5k$", "1.5k-5k$", "5k-20k$", "20k-50k$"];
@@ -371,7 +377,8 @@ export default function InquiryForm() {
 
   if (!started) {
     return (
-      <section className="inquiry">
+      <>
+      <section className="inquiry inq-start">
         <div className="wrap">
           <div className="inq-welcome">
             <h1>
@@ -391,6 +398,22 @@ export default function InquiryForm() {
           </div>
         </div>
       </section>
+
+      {/* proof under the fold — shown only before the questions begin */}
+      <section className="dark inq-reels" aria-label="Selected work">
+        <div className="wrap">
+          <p className="eyebrow">Selected work</p>
+        </div>
+        <ReelCarousel items={SHOWCASE} />
+      </section>
+
+      <section className="inq-clients">
+        <div className="wrap">
+          <p className="eyebrow">Brands we&rsquo;ve worked with</p>
+        </div>
+        <Marquee />
+      </section>
+      </>
     );
   }
 
