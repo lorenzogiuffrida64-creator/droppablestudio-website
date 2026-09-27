@@ -735,15 +735,24 @@ footer :focus-visible{outline-color:var(--sage)}
 .inq-welcome p{color:var(--muted);max-width:40ch;font-weight:500;font-size:clamp(16px,1.9vw,19px);line-height:1.5}
 .inq-welcome .btn{margin-top:14px}
 
-/* welcome proof: reel band, then the brand strip closing the page.
-   The welcome block gives up some height so the reels peek above the fold. */
-.inq-start{padding-bottom:clamp(56px,9vh,96px)}
-.inq-start .inq-welcome{min-height:min(56vh,560px)}
-.inq-reels{padding:clamp(56px,9vh,96px) 0 clamp(50px,8vh,84px)}
-.inq-reels::before,.inq-reels::after{content:none}
-.inq-reels .eyebrow,.inq-clients .eyebrow{justify-content:center;margin-bottom:clamp(26px,4.5vh,42px)}
-.inq-reels .eyebrow::after,.inq-clients .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.55}
-.inq-clients{padding:clamp(64px,10vh,110px) 0 clamp(72px,11vh,120px)}
+/* welcome screen as one composed viewport: reels strip under the header,
+   the ask centred, the brand strip closing the screen */
+.inq-start{
+  min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+  padding-top:calc(62px + clamp(18px,3.5vh,40px)); /* clear the fixed header */
+}
+.inq-start-reels .work-carousel{--reel-h:clamp(120px,19vh,210px)}
+/* soft fade at both edges so the loop reads as endless, not cut off */
+.inq-start-reels .work-rail{
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
+}
+.inquiry.inq-start-main{flex:1;display:flex;align-items:center;padding:clamp(36px,6vh,72px) 0}
+.inq-start-main .wrap{width:100%}
+.inq-start .inq-welcome{min-height:0}
+.inq-clients{padding-bottom:clamp(20px,4vh,44px)}
+.inq-clients .eyebrow{justify-content:center;margin-bottom:clamp(14px,2.4vh,24px)}
+.inq-clients .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.55}
 
 /* groups + fields */
 .inq-group{margin-bottom:clamp(40px,6vh,68px)}
@@ -1151,15 +1160,16 @@ footer :focus-visible{outline-color:var(--sage)}
   *{transition-duration:.001s !important}
 }
 
-/* inquiry welcome proof — tablet + phone rhythm */
+/* inquiry welcome — tablet + phone rhythm */
 @media (min-width:641px) and (max-width:980px){
-  /* iPad: taller reels so each campaign reads clearly, and the welcome block
-     stops stretching down the tall portrait viewport */
-  .inq-reels .work-carousel{--reel-h:clamp(170px,25vw,220px)}
-  .inq-start .inq-welcome{min-height:min(44vh,520px)}
+  /* iPad portrait is tall: bigger reels so each campaign reads clearly */
+  .inq-start-reels .work-carousel{--reel-h:clamp(170px,22vh,260px)}
 }
 @media (max-width:640px){
-  .inq-start .inq-welcome{min-height:0;padding:clamp(24px,8vh,72px) 0}
-  .inq-reels .eyebrow,.inq-clients .eyebrow{font-size:10px;letter-spacing:.2em}
+  .inq-start{padding-top:calc(58px + 16px)}
+  .inq-start-reels .work-carousel{--reel-h:clamp(110px,17vh,150px)}
+  .inq-start-reels .reel{margin-right:14px}
+  .inquiry.inq-start-main{padding:28px 0}
+  .inq-clients .eyebrow{font-size:10px;letter-spacing:.2em}
   .inq-clients .marquee-logo{margin:0 22px}
 }

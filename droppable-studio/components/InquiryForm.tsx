@@ -376,44 +376,41 @@ export default function InquiryForm() {
   }
 
   if (!started) {
+    /* one screen: the work on top, the ask in the middle, the brands below */
     return (
-      <>
-      <section className="inquiry inq-start">
-        <div className="wrap">
-          <div className="inq-welcome">
-            <h1>
-              We&apos;d love to get to know <em>more about you.</em>
-            </h1>
-            <p>
-              Take 3 minutes. The more we understand you, the better we can
-              help.
-            </p>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => setStarted(true)}
-            >
-              Start <span className="arr">→</span>
-            </button>
+      <div className="inq-start">
+        <section className="inq-start-reels" aria-label="Selected work">
+          <ReelCarousel items={SHOWCASE} />
+        </section>
+
+        <section className="inquiry inq-start-main">
+          <div className="wrap">
+            <div className="inq-welcome">
+              <h1>
+                We&apos;d love to get to know <em>more about you.</em>
+              </h1>
+              <p>
+                Take 3 minutes. The more we understand you, the better we can
+                help.
+              </p>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setStarted(true)}
+              >
+                Start <span className="arr">→</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* proof under the fold — shown only before the questions begin */}
-      <section className="dark inq-reels" aria-label="Selected work">
-        <div className="wrap">
-          <p className="eyebrow">Selected work</p>
-        </div>
-        <ReelCarousel items={SHOWCASE} />
-      </section>
-
-      <section className="inq-clients">
-        <div className="wrap">
-          <p className="eyebrow">Brands we&rsquo;ve worked with</p>
-        </div>
-        <Marquee />
-      </section>
-      </>
+        <section className="inq-clients">
+          <div className="wrap">
+            <p className="eyebrow">Brands we&rsquo;ve worked with</p>
+          </div>
+          <Marquee />
+        </section>
+      </div>
     );
   }
 
