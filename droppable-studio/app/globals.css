@@ -739,9 +739,9 @@ footer :focus-visible{outline-color:var(--sage)}
    the ask centred, the brand strip closing the screen */
 .inq-start{
   min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
-  padding-top:calc(62px + clamp(18px,3.5vh,40px)); /* clear the fixed header */
+  padding-top:calc(62px + clamp(36px,7vh,72px)); /* clear the fixed header */
 }
-.inq-start-reels .work-carousel{--reel-h:clamp(120px,19vh,210px)}
+.inq-start-reels .work-carousel{--reel-h:clamp(120px,17vh,200px)}
 /* soft fade at both edges so the loop reads as endless, not cut off */
 .inq-start-reels .work-rail{
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
@@ -750,7 +750,7 @@ footer :focus-visible{outline-color:var(--sage)}
 .inquiry.inq-start-main{flex:1;display:flex;align-items:center;padding:clamp(36px,6vh,72px) 0}
 .inq-start-main .wrap{width:100%}
 .inq-start .inq-welcome{min-height:0}
-.inq-clients{padding-bottom:clamp(20px,4vh,44px)}
+.inq-clients{padding-bottom:clamp(40px,8vh,80px)}
 .inq-clients .eyebrow{justify-content:center;margin-bottom:clamp(14px,2.4vh,24px)}
 .inq-clients .eyebrow::after{content:"";width:34px;height:1px;background:currentColor;opacity:.55}
 
@@ -1166,7 +1166,8 @@ footer :focus-visible{outline-color:var(--sage)}
   .inq-start-reels .work-carousel{--reel-h:clamp(170px,22vh,260px)}
 }
 @media (max-width:640px){
-  .inq-start{padding-top:calc(58px + 16px)}
+  .inq-start{padding-top:calc(58px + 32px)}
+  .inq-clients{padding-bottom:36px}
   .inq-start-reels .work-carousel{--reel-h:clamp(110px,17vh,150px)}
   .inq-start-reels .reel{margin-right:14px}
   .inquiry.inq-start-main{padding:28px 0}
