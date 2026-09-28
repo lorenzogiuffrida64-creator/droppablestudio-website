@@ -157,8 +157,7 @@ const STEPS: Step[] = [
     name: "What they're prepared to invest",
     q: (
       <>
-        To make this actually happen, what are you prepared to{" "}
-        <em>invest?</em>
+        To make this actually happen, what are you prepared to <em>invest?</em>
       </>
     ),
     variant: "chips",
@@ -186,14 +185,6 @@ const STEPS: Step[] = [
     ),
   },
   {
-    kind: "call",
-    q: (
-      <>
-        Work with <em>us</em>
-      </>
-    ),
-  },
-  {
     kind: "text",
     name: "Why Droppable specifically?",
     q: (
@@ -205,6 +196,14 @@ const STEPS: Step[] = [
     placeholder: "Be honest, what pulled you in?",
     multiline: true,
     required: true,
+  },
+  {
+    kind: "call",
+    q: (
+      <>
+        Work with <em>us</em>
+      </>
+    ),
   },
 ];
 
@@ -254,6 +253,13 @@ export default function InquiryForm() {
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
+  /* booking the call IS the send: the call step is last, so the moment
+     Calendly confirms a slot the inquiry goes out — Calendly's "Schedule"
+     is the only button the visitor needs, and leaving right after loses nothing */
+  useEffect(() => {
+    if (booking && status === "idle") void submit();
+  }, [booking]);
+
   const total = STEPS.length;
   const current = STEPS[step];
   const isLast = step === total - 1;
@@ -269,7 +275,7 @@ export default function InquiryForm() {
      on the first control; the aria-live counter announces the new step */
   useEffect(() => {
     const el = stepRef.current?.querySelector<HTMLElement>(
-      "input:not([type=radio]), textarea, [data-step-focus]"
+      "input:not([type=radio]), textarea, [data-step-focus]",
     );
     el?.focus();
   }, [step]);
@@ -429,9 +435,7 @@ export default function InquiryForm() {
             <h2>
               We&apos;ll be <em>in touch.</em>
             </h2>
-            <p>
-              Thank you, your inquiry just landed with the studio.
-            </p>
+            <p>Thank you, your inquiry just landed with the studio.</p>
             <Link className="btn" href="/">
               Back to site
             </Link>
@@ -508,7 +512,8 @@ export default function InquiryForm() {
                             name={current.name}
                             value={opt}
                             checked={answers[current.name] === opt}
-                            onChange={() => set(current.name, opt)}                          />
+                            onChange={() => set(current.name, opt)}
+                          />
                           <span>{opt}</span>
                         </label>
                       ) : (
@@ -518,10 +523,11 @@ export default function InquiryForm() {
                             name={current.name}
                             value={opt}
                             checked={answers[current.name] === opt}
-                            onChange={() => set(current.name, opt)}                          />
+                            onChange={() => set(current.name, opt)}
+                          />
                           <span>{opt}</span>
                         </label>
-                      )
+                      ),
                     )}
                   </div>
                   {errors[current.name] && (
@@ -552,8 +558,8 @@ export default function InquiryForm() {
                 <div className="inq-answer inq-call">
                   <p className="inq-note">
                     {booked
-                      ? "You're booked, the invite is in your inbox. One last question and you're done."
-                      : "Pick a slot for your 1:1 strategy call, or skip ahead and we'll reach out."}
+                      ? "You're booked, the invite is in your inbox. Sending your brief to the studio…"
+                      : "Pick a slot for your 1:1 strategy call. Booking it sends your brief to the studio, nothing else to click."}
                   </p>
                   <div className="inq-calendly-wrap">
                     <Skel light />
@@ -667,7 +673,7 @@ export default function InquiryForm() {
 
             {/* navigation */}
             <div className="inq-nav">
-              {step > 0 ? (
+              {step > 0 && !booked ? (
                 <button type="button" className="inq-prev" onClick={goBack}>
                   <span className="arr" aria-hidden="true">
                     ←
@@ -688,28 +694,49 @@ export default function InquiryForm() {
                     Skip
                   </button>
                 )}
-                <button
-                  className="btn"
-                  type="submit"
-                  disabled={status === "submitting"}
-                >
-                  {status === "submitting" ? (
-                    "Sending…"
-                  ) : isLast ? (
-                    <>
-                      Send it to the studio <span className="arr">→</span>
-                    </>
-                  ) : (
-                    <>
-                      Next <span className="arr">→</span>
-                    </>
-                  )}
-                </button>
+                {/* on the call step Calendly's "Schedule" is the send; the only
+                    form control is a quiet fallback for anyone not booking
+                    (or a retry if the auto-send failed) */}
+                {current.kind === "call" && status !== "error" ? (
+                  <button
+                    className="inq-skip"
+                    type="submit"
+                    disabled={status === "submitting" || booked}
+                  >
+                    {status === "submitting"
+                      ? "Sending…"
+                      : "Skip the call, just send my brief"}
+                  </button>
+                ) : (
+                  <button
+                    className="btn"
+                    type="submit"
+                    disabled={status === "submitting"}
+                  >
+                    {status === "submitting" ? (
+                      "Sending…"
+                    ) : status === "error" && current.kind === "call" ? (
+                      <>
+                        Try again <span className="arr">→</span>
+                      </>
+                    ) : isLast ? (
+                      <>
+                        Send it to the studio <span className="arr">→</span>
+                      </>
+                    ) : (
+                      <>
+                        Next <span className="arr">→</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
             <div className="inq-foot">
-              <span className="inq-reassure">No retainers · NDA on request</span>
+              <span className="inq-reassure">
+                No retainers · NDA on request
+              </span>
               {status === "error" && (
                 <p className="inq-error" role="alert">
                   Something went wrong sending your inquiry. Please try again in
@@ -730,7 +757,9 @@ function calendlySrc(answers: Answers) {
   const params = new URLSearchParams({
     embed_type: "Inline",
     embed_domain:
-      typeof window !== "undefined" ? window.location.host : "droppablestudio.com",
+      typeof window !== "undefined"
+        ? window.location.host
+        : "droppablestudio.com",
     hide_gdpr_banner: "1",
     background_color: "cfd7c7",
     text_color: "1b2c40",
