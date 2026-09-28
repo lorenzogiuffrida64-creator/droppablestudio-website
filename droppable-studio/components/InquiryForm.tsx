@@ -221,7 +221,17 @@ type Status = "idle" | "submitting" | "done" | "error";
 
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
 
-export default function InquiryForm() {
+/* the same brief without its Calendly step — for the hidden /brief page we
+   send by hand to leads whose call is already on the calendar */
+const STEPS_NO_CALL = STEPS.filter((s) => s.kind !== "call");
+
+export default function InquiryForm({
+  callBooked = false,
+}: {
+  /* the call was booked outside this form, so skip the Calendly step */
+  callBooked?: boolean;
+} = {}) {
+  const steps = callBooked ? STEPS_NO_CALL : STEPS;
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ "Phone Code": "+39" });
@@ -260,8 +270,8 @@ export default function InquiryForm() {
     if (booking && status === "idle") void submit();
   }, [booking]);
 
-  const total = STEPS.length;
-  const current = STEPS[step];
+  const total = steps.length;
+  const current = steps[step];
   const isLast = step === total - 1;
 
   /* a "choice" whose selected option is "Other" reveals a free-text field so
@@ -293,7 +303,7 @@ export default function InquiryForm() {
     setAnswers((a) => ({ ...a, [name]: value }));
 
   function validateStep(i: number): Errors {
-    const s = STEPS[i];
+    const s = steps[i];
     const e: Errors = {};
     if (s.kind === "contact") {
       for (const k of CONTACT_REQUIRED) {
@@ -344,7 +354,11 @@ export default function InquiryForm() {
        notification reads "Phone Number: +39 328 827 3008" */
     const payload: Answers = {
       ...answers,
-      "Strategy call": booked ? "Booked via Calendly" : "Not booked",
+      "Strategy call": booked
+        ? "Booked via Calendly"
+        : callBooked
+          ? "Already booked (brief sent via private link)"
+          : "Not booked",
       ...(booking && {
         _calendlyEvent: booking.event,
         _calendlyInvitee: booking.invitee,
