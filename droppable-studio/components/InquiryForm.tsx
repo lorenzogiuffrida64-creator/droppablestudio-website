@@ -321,6 +321,8 @@ export default function InquiryForm() {
     const e = validateStep(step);
     setErrors(e);
     if (Object.keys(e).length) return;
+    /* the call step only sends once Calendly confirms a booking */
+    if (current.kind === "call" && !booked) return;
     if (isLast) void submit();
     else setStep((s) => s + 1);
   }
@@ -559,7 +561,7 @@ export default function InquiryForm() {
                   <p className="inq-note">
                     {booked
                       ? "You're booked, the invite is in your inbox. Sending your brief to the studio…"
-                      : "Pick a slot for your 1:1 strategy call. Booking it sends your brief to the studio, nothing else to click."}
+                      : "Pick a slot for your 1:1 strategy call. Booking it sends your brief to the studio."}
                   </p>
                   <div className="inq-calendly-wrap">
                     <Skel light />
@@ -694,19 +696,15 @@ export default function InquiryForm() {
                     Skip
                   </button>
                 )}
-                {/* on the call step Calendly's "Schedule" is the send; the only
-                    form control is a quiet fallback for anyone not booking
-                    (or a retry if the auto-send failed) */}
+                {/* on the call step Calendly's "Schedule" is the send, a call
+                    is required: no form button, except a retry if the
+                    auto-send failed */}
                 {current.kind === "call" && status !== "error" ? (
-                  <button
-                    className="inq-skip"
-                    type="submit"
-                    disabled={status === "submitting" || booked}
-                  >
-                    {status === "submitting"
-                      ? "Sending…"
-                      : "Skip the call, just send my brief"}
-                  </button>
+                  status === "submitting" && (
+                    <span className="inq-skip" role="status">
+                      Sending…
+                    </span>
+                  )
                 ) : (
                   <button
                     className="btn"
