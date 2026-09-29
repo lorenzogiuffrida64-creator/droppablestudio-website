@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LINKS } from "@/config/links";
-import { PREORDER_DISPLAY } from "@/config/preorder";
+import { PreorderRibbon, PreorderPriceLine } from "@/components/PreorderClock";
 
 export default function Academy() {
   return (
@@ -41,11 +41,7 @@ export default function Academy() {
             </div>
 
             <div className="path-card featured rv d1">
-              <span className="uc-banner" role="status">
-                <span className="uc-banner-label">
-                  ◆ Under Construction · Launching Soon ◆
-                </span>
-              </span>
+              <PreorderRibbon />
               <span className="tier">
                 Skool — <b>The full system</b>
               </span>
@@ -59,11 +55,7 @@ export default function Academy() {
                 <li>Weekly live workshops (meet the founders)</li>
                 <li>Private operator network</li>
               </ul>
-              <p className="preorder-price">
-                <span className="was">{PREORDER_DISPLAY.launch}</span>
-                <span className="now">{PREORDER_DISPLAY.now}</span>
-                <span className="off">{PREORDER_DISPLAY.off} · founding seat</span>
-              </p>
+              <PreorderPriceLine />
               <Link className="btn" href={LINKS.preorder}>
                 Pre-order your seat <span className="arr">→</span>
               </Link>

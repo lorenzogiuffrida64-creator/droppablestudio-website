@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DISCOUNT_PERCENT } from "@/config/preorder";
 
 export const metadata: Metadata = {
   title: "Pre-order confirmed — Droppable Studio",
@@ -38,7 +37,7 @@ export default function PreorderSuccessPage() {
                 You&apos;re <em>in.</em>
               </h2>
               <p>
-                Your founding seat is reserved and the {DISCOUNT_PERCENT}% rate is
+                Your founding seat is reserved and your founding price is
                 locked. Check
                 your inbox for the confirmation — we&apos;ll email you the moment
                 The Droppable Method opens, with your access details.

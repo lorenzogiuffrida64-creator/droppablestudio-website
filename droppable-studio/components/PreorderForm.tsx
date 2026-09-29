@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { PREORDER_DISPLAY } from "@/config/preorder";
+import { priceAt, formatPrice } from "@/config/preorder";
+import { useNow, PreorderPriceLine } from "@/components/PreorderClock";
 import { isValidDialCode } from "@/config/countryCodes";
 import CountryCodeField from "@/components/CountryCodeField";
 
@@ -30,6 +31,8 @@ export default function PreorderForm() {
   });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
+  const now = useNow();
+  const price = formatPrice(priceAt(now ?? 0).cents);
 
   const firstRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -89,15 +92,11 @@ export default function PreorderForm() {
             Lock your <em>founding seat.</em>
           </h1>
           <p className="preorder-lede">
-            The Droppable Method opens soon. Pre-order now at {PREORDER_DISPLAY.off}{" "}
-            and get full access the day it launches.
+            The Droppable Method opens soon. Lock the founding price now — it
+            rises every 24 hours — and get full access the day it launches.
           </p>
 
-          <p className="preorder-price preorder-price--lg">
-            <span className="was">{PREORDER_DISPLAY.launch}</span>
-            <span className="now">{PREORDER_DISPLAY.now}</span>
-            <span className="off">{PREORDER_DISPLAY.off} · founding seat</span>
-          </p>
+          <PreorderPriceLine large />
 
           <form noValidate onSubmit={onSubmit}>
             {/* honeypot — bots fill it, dropped server-side */}
@@ -236,7 +235,7 @@ export default function PreorderForm() {
                   "Redirecting…"
                 ) : (
                   <>
-                    Pre-order for {PREORDER_DISPLAY.now}{" "}
+                    Pre-order for {price}{" "}
                     <span className="arr">→</span>
                   </>
                 )}

@@ -5,7 +5,7 @@ import PreorderForm from "@/components/PreorderForm";
 export const metadata: Metadata = {
   title: "Pre-order — The Droppable Method",
   description:
-    "Founding pre-order for the Droppable Method (Skool). Lock your seat at 50% off — full access when the community opens.",
+    "Founding pre-order for the Droppable Method (Skool). Lock the founding price before it rises — full access when the community opens.",
 };
 
 export default function PreorderPage() {

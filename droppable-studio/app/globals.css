@@ -1172,3 +1172,9 @@ footer :focus-visible{outline-color:var(--sage)}
   .inq-clients .eyebrow{font-size:10px;letter-spacing:.2em}
   .inq-clients .marquee-logo{margin:0 22px}
 }
+
+/* live pre-order countdown (components/PreorderClock.tsx) */
+.tnum{font-variant-numeric:tabular-nums}
+.is-pending{visibility:hidden} /* pre-mount: never flash a build-time price */
+.preorder-next{margin:6px 0 0;font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.preorder-price--lg + .preorder-next{margin:-18px 0 26px}

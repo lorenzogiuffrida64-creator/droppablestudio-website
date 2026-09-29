@@ -13,7 +13,7 @@
  * Optional: NEXT_PUBLIC_SITE_URL (otherwise the request origin is used).
  */
 import { getStripe } from "@/lib/stripe";
-import { PREORDER } from "@/config/preorder";
+import { PREORDER, priceAt } from "@/config/preorder";
 
 export const runtime = "nodejs";
 
@@ -62,7 +62,8 @@ export async function POST(req: Request) {
           quantity: 1,
           price_data: {
             currency: PREORDER.currency,
-            unit_amount: PREORDER.priceCents,
+            /* live tier at request time — rises every 24h */
+            unit_amount: priceAt(Date.now()).cents,
             product_data: {
               name: PREORDER.productName,
               description: PREORDER.productDescription,
