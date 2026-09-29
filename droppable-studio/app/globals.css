@@ -974,8 +974,6 @@ footer :focus-visible{outline-color:var(--sage)}
   .launch-bar{top:-17px;padding:8px 12px;font-size:13px}
   .launch-bar-label{font-size:9.5px;letter-spacing:.12em}
   .launch-bar-days{font-size:15px}
-  .preorder-next{font-size:10.5px;letter-spacing:.05em;padding:9px 12px;gap:7px;white-space:nowrap}
-  .preorder-next b{font-size:14px}
 
   .work-carousel{--reel-h:min(38vw,168px)}
   .work-fan{--fan-h:min(38vw,168px);--fan-top:14px}
@@ -1168,3 +1166,11 @@ footer :focus-visible{outline-color:var(--sage)}
 @keyframes next-pulse{50%{opacity:.25}}
 @media (prefers-reduced-motion: reduce){.preorder-next-dot{animation:none}}
 .preorder-price--lg + .preorder-next{margin:-14px 0 26px}
+@media (max-width:420px){
+  .preorder-next{font-size:10px;letter-spacing:.03em;padding:9px 11px;gap:6px;white-space:nowrap}
+  .preorder-next b{font-size:13.5px}
+}
+/* smallest phones: let the alert wrap instead of overrunning the card */
+@media (max-width:360px){
+  .preorder-next{white-space:normal;flex-wrap:wrap;row-gap:2px}
+}
