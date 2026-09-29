@@ -245,14 +245,22 @@ export default function InquiryForm({
   } | null>(null);
   const booked = booking !== null;
 
-  /* Calendly posts "calendly.event_scheduled" to the parent window once a
-     slot is booked, carrying the scheduled event + invitee URIs */
+  /* Calendly's own page height — its "Enter details" screen is taller than
+     the date picker, so a fixed-height iframe clips it and traps scrolling */
+  const [calendlyHeight, setCalendlyHeight] = useState<number | null>(null);
+
+  /* Calendly posts "calendly.page_height" as its content resizes, and
+     "calendly.event_scheduled" once a slot is booked, carrying the
+     scheduled event + invitee URIs */
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
-      if (
-        e.origin === "https://calendly.com" &&
-        e.data?.event === "calendly.event_scheduled"
-      ) {
+      if (e.origin !== "https://calendly.com") return;
+      if (e.data?.event === "calendly.page_height") {
+        const h = parseInt(String(e.data.payload?.height ?? ""), 10);
+        /* mid-transition it briefly reports ~2–26px; ignore those so the
+           iframe never collapses between screens */
+        if (h >= 400) setCalendlyHeight(h);
+      } else if (e.data?.event === "calendly.event_scheduled") {
         setBooking({
           event: String(e.data.payload?.event?.uri ?? ""),
           invitee: String(e.data.payload?.invitee?.uri ?? ""),
@@ -581,8 +589,13 @@ export default function InquiryForm({
                     <Skel light />
                     <iframe
                       className="inq-calendly"
-                      title="Book a 1:1 strategy call"
+                      /* aria-label, not title: a title shows as a hover
+                         tooltip over Calendly's own form */
+                      aria-label="Book a 1:1 strategy call"
                       src={calendlySrc(answers)}
+                      style={
+                        calendlyHeight ? { height: calendlyHeight } : undefined
+                      }
                       loading="lazy"
                       data-step-focus
                     />
