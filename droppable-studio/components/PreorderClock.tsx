@@ -1,24 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   PREORDER,
   priceAt,
   formatPrice,
   formatCountdown,
-  discountPercent,
+  formatLaunchPrice,
 } from "@/config/preorder";
 
-/** Wall clock ticking every second. null until mounted: the home page is
- *  statically rendered, so the build-time price must never be shown. */
-export function useNow(): number | null {
-  const [now, setNow] = useState<number | null>(null);
+/* Server-seeded clock for the /preorder landing page: the page is rendered per
+   request, the server passes its own time (plus any preview offset) down, and
+   every countdown hydrates from that exact value — so first paint is already
+   right, never "00:00:00". */
+const ClockCtx = createContext<number | null>(null);
+
+export function ClockProvider({
+  initialNow,
+  offset = 0,
+  children,
+}: {
+  initialNow: number;
+  /* preview override: ms added to the real clock (0 in production) */
+  offset?: number;
+  children: React.ReactNode;
+}) {
+  const [now, setNow] = useState(initialNow);
   useEffect(() => {
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
+    const tick = () => setNow(Date.now() + offset);
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
-  return now;
+  }, [offset]);
+  return <ClockCtx.Provider value={now}>{children}</ClockCtx.Provider>;
+}
+
+/** Wall clock ticking every second. Inside a ClockProvider it's the seeded
+ *  clock; elsewhere (the statically rendered home page) it's null until
+ *  mounted, so a build-time price is never shown. */
+export function useNow(): number | null {
+  const seeded = useContext(ClockCtx);
+  const [local, setLocal] = useState<number | null>(null);
+  useEffect(() => {
+    if (seeded != null) return;
+    setLocal(Date.now());
+    const id = setInterval(() => setLocal(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [seeded]);
+  return seeded ?? local;
 }
 
 /** "7 days 01h 58m 37s" — units spelled out so the launch date reads at a glance. */
@@ -56,25 +85,30 @@ export function PreorderRibbon() {
   );
 }
 
-/** Struck launch price, live price, discount + "price rises to €X in hh:mm:ss". */
-export function PreorderPriceLine({ large = false }: { large?: boolean }) {
+/** Home-page Skool card: the same ladder as /preorder (today / next / launch)
+ *  plus "price rises in hh:mm:ss". No crossed-out reference price. */
+export function PreorderPriceLine() {
   const now = useNow();
   /* pre-mount placeholder (hidden) uses a fixed time so SSR and hydration match */
   const p = priceAt(now ?? 0);
+  const open = now != null && now >= PREORDER.launchAt;
   return (
     <div className={now == null ? "is-pending" : undefined}>
-      <p className={`preorder-price${large ? " preorder-price--lg" : ""}`}>
-        {!p.full && (
-          <span className="was">{formatPrice(PREORDER.launchPriceCents)}</span>
-        )}
-        <span className="now">{formatPrice(p.cents)}</span>
-        {!p.full && (
-          <span className="off">
-            {discountPercent(p.cents)}% off · founding seat
-          </span>
-        )}
-      </p>
-      {p.nextAt != null && p.nextCents != null && now != null && (
+      {open ? (
+        <p className="preorder-price">
+          <span className="now">{formatLaunchPrice()}</span>
+        </p>
+      ) : (
+        <p className="preorder-price">
+          <span className="now">{formatPrice(p.cents)}</span>
+          <span className="off">today</span>
+          {p.nextCents != null && (
+            <span className="then">then {formatPrice(p.nextCents)}</span>
+          )}
+          <span className="then">· {formatLaunchPrice()} at launch</span>
+        </p>
+      )}
+      {!open && p.nextAt != null && p.nextCents != null && now != null && (
         <p className="preorder-next" role="timer">
           <span className="preorder-next-dot" aria-hidden="true" />
           Price rises to {formatPrice(p.nextCents)} in{" "}

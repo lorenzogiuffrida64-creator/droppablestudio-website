@@ -13,7 +13,8 @@
  * Optional: NEXT_PUBLIC_SITE_URL (otherwise the request origin is used).
  */
 import { getStripe } from "@/lib/stripe";
-import { PREORDER, priceAt } from "@/config/preorder";
+import { PREORDER, priceAt, stateAt } from "@/config/preorder";
+import { UTM_KEYS } from "@/lib/track";
 
 export const runtime = "nodejs";
 
@@ -47,6 +48,24 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid email" }, { status: 400 });
   }
 
+  /* the pre-order closes when the school opens */
+  const now = Date.now();
+  if (stateAt(now) === "launch") {
+    return Response.json({ error: "Pre-order closed" }, { status: 410 });
+  }
+  const price = priceAt(now);
+
+  /* UTMs from the landing URL, kept for attribution (Stripe metadata) */
+  const rawUtms =
+    data.utms && typeof data.utms === "object"
+      ? (data.utms as Record<string, unknown>)
+      : {};
+  const utms: Record<string, string> = {};
+  for (const k of UTM_KEYS) {
+    const v = rawUtms[k];
+    if (typeof v === "string" && v.trim()) utms[k] = v.trim().slice(0, 100);
+  }
+
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     new URL(req.url).origin;
@@ -63,7 +82,7 @@ export async function POST(req: Request) {
           price_data: {
             currency: PREORDER.currency,
             /* live tier at request time — rises every 24h */
-            unit_amount: priceAt(Date.now()).cents,
+            unit_amount: price.cents,
             product_data: {
               name: PREORDER.productName,
               description: PREORDER.productDescription,
@@ -76,6 +95,9 @@ export async function POST(req: Request) {
         lastName,
         phone,
         type: "skool_preorder",
+        /* the price step charged, in cents */
+        step: String(price.cents),
+        ...utms,
       },
       success_url: `${origin}/preorder/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/preorder`,

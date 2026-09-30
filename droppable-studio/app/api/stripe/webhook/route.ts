@@ -15,7 +15,6 @@
  */
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
-import { discountPercent } from "@/config/preorder";
 
 export const runtime = "nodejs";
 
@@ -101,7 +100,6 @@ export async function POST(req: Request) {
       session.customer_details?.email || session.customer_email || "";
     const phone = session.customer_details?.phone || meta.phone || "—";
     const amount = fmtAmount(session.amount_total, session.currency);
-    const pct = discountPercent(session.amount_total ?? 0);
 
     /* 1) studio notification */
     const studioTo = (process.env.PREORDER_TO || process.env.INQUIRY_TO || "")
@@ -115,6 +113,7 @@ export async function POST(req: Request) {
       ["Phone", phone],
       ["Amount", amount],
       ["Product", "The Droppable Method — Founding Pre-order"],
+      ["Source", [meta.utm_source, meta.utm_content].filter(Boolean).join(" / ") || "—"],
     ];
 
     await sendEmail({
@@ -159,7 +158,7 @@ export async function POST(req: Request) {
           "",
           `Amount: ${amount}`,
           "",
-          `You've locked the ${pct}% founding rate. We'll email you the moment The Droppable Method opens, with your access details.`,
+          `Your founding price of ${amount} is locked. We'll email you the moment The Droppable Method opens, with your access details.`,
           "",
           "— Droppable Studio",
         ].join("\n"),
@@ -168,7 +167,7 @@ export async function POST(req: Request) {
             <p>Hi ${esc(name)},</p>
             <p>Your <strong>founding pre-order is confirmed</strong> — thank you.</p>
             <p><strong>Amount:</strong> ${esc(amount)}</p>
-            <p>You've locked the ${pct}% founding rate. We'll email you the moment
+            <p>Your founding price of ${esc(amount)} is locked. We'll email you the moment
             <em>The Droppable Method</em> opens, with your access details.</p>
             <p>— Droppable Studio</p>
           </div>`,

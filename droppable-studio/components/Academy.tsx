@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LINKS } from "@/config/links";
 import { PreorderRibbon, PreorderPriceLine } from "@/components/PreorderClock";
+import { SCHOOL } from "@/config/method";
 
 export default function Academy() {
   return (
@@ -48,12 +49,10 @@ export default function Academy() {
               <h3>The Droppable Method</h3>
               <p className="path-lede">From 0 to hero in generative AI.</p>
               <ul>
-                <li>78 lessons</li>
-                <li>Every prompt, tool &amp; render setting behind a real Droppable campaign</li>
-                <li>Weekly drops: Claude Code, AI tools &amp; insider secrets</li>
-                <li>Open your first AI marketing agency — scale it to $10k/mo</li>
-                <li>Weekly live workshops (meet the founders)</li>
-                <li>Private operator network</li>
+                <li>{SCHOOL.lessonCount} lessons</li>
+                {SCHOOL.includes.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
               </ul>
               <PreorderPriceLine />
               <Link className="btn" href={LINKS.preorder}>
