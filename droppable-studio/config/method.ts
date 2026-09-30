@@ -23,12 +23,14 @@ export const SCHOOL = {
   ],
 };
 
-/* Pre-order bonuses — what founding members get on top of their seat. */
+/* Founders-only bonuses — pre-order only, removed when the school opens.
+   Prices are never written here: they come from config/preorder.ts. */
 export type Bonus = {
   id: "pdf" | "sheets";
   /* the big number / word on the object */
   figure: string;
   title: string;
+  subtitle?: string;
   line: string;
 };
 
@@ -36,21 +38,26 @@ export const BONUSES: Bonus[] = [
   {
     id: "pdf",
     figure: "600",
-    title: "The secret prompt library",
-    line: "A 600-page PDF full of prompts, all from 10 months of Droppable Studio's Higgsfield history.",
+    title: "The Droppable Codex",
+    line: "600 pages. Every prompt behind 10 months of Droppable Studio campaigns in Higgsfield.",
   },
   {
     id: "sheets",
     figure: "Sheets",
-    title: "Secret keyword & source sheets",
-    line: "The keywords that AI actually understands are here.",
+    title: "The Decoder",
+    subtitle: "Model Language Sheets",
+    line: "The exact words AI models actually understand, and the sources we pull our references from.",
   },
 ];
 
 /* locked: the file is blurred at encode time and the card shows a lock + the
    class name instead (for modules whose lessons aren't titled yet) */
 export type TestimonialClip = { src: string; name: string; aspect: number };
-export type TestimonialChat = { src: string; width: number; height: number; alt: string };
+export type TestimonialChat = {
+  src: string; width: number; height: number; alt: string;
+  /* show the whole screenshot at its own ratio instead of the 5:6 crop + fade */
+  full?: boolean;
+};
 
 export type Mentor = { name: string; role: string; photo: string; focus: string };
 
@@ -147,14 +154,15 @@ export const METHOD = {
   testimonials: {
     clips: [
       { src: "/method/testimonials/alisa-real", name: "Alisa", aspect: 1048 / 720 },
-      { src: "/method/testimonials/hamed", name: "Hamed", aspect: 720 / 1280 },
+      { src: "/method/testimonials/hamed-2x", name: "Hamed", aspect: 1280 / 720 },
       { src: "/method/testimonials/soner", name: "Soner", aspect: 1280 / 720 },
       { src: "/method/testimonials/alisa-answers", name: "Alisa", aspect: 1048 / 720 },
     ] as TestimonialClip[],
     chats: [
       { src: "/method/testimonials/chat-kolar.webp", width: 640, height: 768, alt: "Message from a student after a one-hour session: \"I now feel fully equipped to go all-in and make things happen.\"" },
       { src: "/method/testimonials/chat-alisa.webp", width: 640, height: 768, alt: "Message from a student: \"I've genuinely learned a lot. I'm really happy to be working with you!\"" },
-      { src: "/method/testimonials/chat-aly.webp", width: 640, height: 768, alt: "A student sharing his AI video shots: \"yes they really really helped\"" },
+      { src: "/method/testimonials/chat-aly.webp", width: 640, height: 1115, full: true, alt: "A student sharing his AI video shots: \"yes they really really helped\"" },
+      { src: "/method/testimonials/chat-aly-video.webp", width: 640, height: 768, alt: "A student sharing his AI surf video: \"yeah you really really helped me\"" },
       { src: "/method/testimonials/chat-discord.webp", width: 640, height: 768, alt: "Reactions to Droppable Studio work in the Discord community" },
     ] as TestimonialChat[],
   },

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { LINKS } from "@/config/links";
 import { WORK } from "@/config/work";
-import { BONUSES, METHOD, SCHOOL, type Bonus } from "@/config/method";
+import { BONUSES, METHOD, SCHOOL } from "@/config/method";
+import Founders from "@/components/method/Founders";
 import PreorderForm from "@/components/PreorderForm";
 import {
   LadderCompact,
@@ -9,7 +10,6 @@ import {
   SeatButton,
   FinalLine,
   OnlyIn,
-  SeatPrice,
 } from "@/components/method/Pricing";
 import {
   FounderVideo,
@@ -119,102 +119,9 @@ export function Inside() {
   );
 }
 
-/* ---------- pre-order bonuses ----------
-   Read in one second: your seat + the PDF + the sheets. Each bonus is drawn as
-   the object it is (a thick stack of pages, a spreadsheet), not a card. */
-function BonusObject({ b }: { b: Bonus }) {
-  return (
-    <figure className={`bonus bonus--${b.id}`}>
-      <div className="bonus-art" aria-hidden="true">
-        {b.id === "pdf" ? (
-          <div className="pdf">
-            <span className="pdf-page p3" />
-            <span className="pdf-page p2" />
-            <span className="pdf-cover">
-              <img src="/logo-sage.png" alt="" width={26} height={26} />
-              <b>{b.figure}</b>
-              <em>pages of prompts</em>
-              <i className="pdf-lines" />
-              <span className="pdf-type">PDF</span>
-            </span>
-          </div>
-        ) : (
-          <div className="sheet">
-            <span className="sheet-top">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span className="sheet-grid">
-              {Array.from({ length: 24 }, (_, i) => (
-                <i
-                  key={i}
-                  className={i === 9 ? "sel" : i < 3 ? "hd" : undefined}
-                />
-              ))}
-            </span>
-            <span className="sheet-tabs">
-              <b>Keywords</b>
-              <span>Sources</span>
-            </span>
-          </div>
-        )}
-        <span className="bonus-stamp">Included</span>
-      </div>
-      <figcaption>
-        <b>{b.title}</b>
-        <span>{b.line}</span>
-      </figcaption>
-    </figure>
-  );
-}
-
+/* ---------- founders-only bonuses (components/method/Founders.tsx) ---------- */
 export function Bonuses() {
-  const [pdf, sheets] = BONUSES;
-  return (
-    <OnlyIn state="preorder">
-      <section className="m-section m-bonus" aria-labelledby="m-bonus-h">
-        <div className="wrap">
-          <div className="m-bonus-head">
-            <h2 id="m-bonus-h">Pre-order, and these come with it.</h2>
-            <p>Included free with every founding seat.</p>
-          </div>
-
-          <div className="bonus-eq">
-            <div className="seat" style={{ gridArea: "seat" }}>
-              <img src="/logo-sage.png" alt="" width={34} height={34} />
-              <span className="seat-k">Your founding seat</span>
-              <b className="seat-name">The Droppable Method</b>
-              <span className="seat-price">
-                <SeatPrice />
-              </span>
-            </div>
-            <div className="bonus-cap seat-cap">
-              <b>Private Skool room</b>
-              <span>Included free with every founding seat.</span>
-            </div>
-            <span
-              className="eq-op"
-              style={{ gridArea: "op1" }}
-              aria-hidden="true"
-            >
-              +
-            </span>
-            <BonusObject b={pdf} />
-            <span
-              className="eq-op"
-              style={{ gridArea: "op2" }}
-              aria-hidden="true"
-            >
-              +
-            </span>
-            <BonusObject b={sheets} />
-          </div>
-          <Todo label="MORE_BONUSES — any other pre-order bonus (add to BONUSES in config/method.ts)" />
-        </div>
-      </section>
-    </OnlyIn>
-  );
+  return <Founders />;
 }
 
 /* ---------- 5.7 the path ---------- */
@@ -288,7 +195,11 @@ export function Testimonials() {
         <div className="wrap">
           <ul className="chats" aria-label="Messages from students">
             {chats.map((c) => (
-              <li className="chat" key={c.src}>
+              <li
+                className={c.full ? "chat chat-full" : "chat"}
+                key={c.src}
+                style={c.full ? { aspectRatio: `${c.width} / ${c.height}` } : undefined}
+              >
                 <img
                   src={c.src}
                   width={c.width}
