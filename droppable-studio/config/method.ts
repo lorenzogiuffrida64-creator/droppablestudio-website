@@ -210,9 +210,11 @@ export const METHOD = {
   /* founding-member counter. source "manual" reads `value`; hidden below `minToShow` */
   counter: {
     source: "manual" as const,
-    value: 0,
+    /* Lorenzo, 2026-09-30: 150+ pre-orders — update as it grows */
+    value: 150,
+    /* shows "150+" — a floor, not an exact live count */
+    plus: true,
     minToShow: 25,
-    /* true → label "members inside" instead of "founding members" */
-    includesFreeSeats: false,
+    label: "already pre-ordered",
   },
 };

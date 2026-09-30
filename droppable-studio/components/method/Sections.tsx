@@ -364,8 +364,12 @@ function Counter() {
   if (counter.value < counter.minToShow) return null;
   return (
     <p className="m-counter">
-      <b className="tnum">{counter.value}</b>{" "}
-      {counter.includesFreeSeats ? "members inside" : "founding members"}
+      <span className="m-counter-dot" aria-hidden="true" />
+      <b className="tnum">
+        {counter.value}
+        {counter.plus ? "+" : ""}
+      </b>{" "}
+      {counter.label}
     </p>
   );
 }
