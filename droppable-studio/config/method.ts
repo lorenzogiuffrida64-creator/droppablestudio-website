@@ -39,14 +39,14 @@ export const BONUSES: Bonus[] = [
     id: "pdf",
     figure: "600",
     title: "The Droppable Codex",
-    line: "600 pages. Every prompt behind 10 months of Droppable Studio campaigns in Higgsfield.",
+    line: "600 pages of our real campaign prompts.",
   },
   {
     id: "sheets",
     figure: "Sheets",
     title: "The Decoder",
     subtitle: "Model Language Sheets",
-    line: "The exact words AI models actually understand, and the sources we pull our references from.",
+    line: "The words AI models actually understand.",
   },
 ];
 
@@ -153,10 +153,10 @@ export const METHOD = {
      people on the call) and real chats (cropped, status bars removed) */
   testimonials: {
     clips: [
+      { src: "/method/testimonials/alisa-answers", name: "Alisa", aspect: 1048 / 720 },
       { src: "/method/testimonials/alisa-real", name: "Alisa", aspect: 1048 / 720 },
       { src: "/method/testimonials/hamed-2x", name: "Hamed", aspect: 1280 / 720 },
       { src: "/method/testimonials/soner", name: "Soner", aspect: 1280 / 720 },
-      { src: "/method/testimonials/alisa-answers", name: "Alisa", aspect: 1048 / 720 },
     ] as TestimonialClip[],
     chats: [
       { src: "/method/testimonials/chat-kolar.webp", width: 640, height: 768, alt: "Message from a student after a one-hour session: \"I now feel fully equipped to go all-in and make things happen.\"" },

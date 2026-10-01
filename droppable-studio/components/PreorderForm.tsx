@@ -227,9 +227,6 @@ export default function PreorderForm() {
       </div>
 
       <div className="inq-foot">
-        <span className="inq-reassure">
-          Secure checkout · Powered by Stripe
-        </span>
         {status === "error" && (
           <p className="inq-error" role="alert">
             Something went wrong starting checkout. Please try again in a

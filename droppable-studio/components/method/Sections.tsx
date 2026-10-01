@@ -38,7 +38,6 @@ export function Hero() {
           <h1>
             {hero.headline} <em>{hero.headlineAccent}</em>
           </h1>
-          <p className="m-hero-sub">{hero.sub}</p>
         </div>
 
         <div className="m-hero-media">
@@ -54,22 +53,11 @@ export function Hero() {
 
         <div className="m-hero-buy">
           <LadderCompact />
-          <OnlyIn state="preorder">
-            <p className="m-hero-when">
-              One payment today. Full access the day the school opens.
-            </p>
-          </OnlyIn>
-          <SeatButton source="hero_cta_click" className="btn m-cta" />
-          <Counter />
-          <OnlyIn state="preorder">
-            <p className="m-trust">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="5" y="11" width="14" height="9" rx="2" />
-                <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-              </svg>
-              Secure checkout with Stripe
-            </p>
-          </OnlyIn>
+          {/* the CTA with the social-proof badge pinned to its corner */}
+          <div className="m-cta-wrap">
+            <SeatButton source="hero_cta_click" className="btn m-cta" />
+            <Counter badge />
+          </div>
         </div>
       </div>
     </section>
@@ -187,7 +175,6 @@ export function Testimonials() {
       <div className="wrap">
         <div className="m-testi-head">
           <h2 id="m-testi-h">Straight from our students.</h2>
-          <p>Real calls and real messages from people we&apos;ve taught.</p>
         </div>
       </div>
       {clips.length > 0 && <TestimonialReel clips={clips} />}
@@ -270,11 +257,11 @@ export function Offer() {
 }
 
 /* ---------- 6.3 founding-member counter (hidden under the threshold) ---------- */
-function Counter() {
+function Counter({ badge = false }: { badge?: boolean }) {
   const { counter } = METHOD;
   if (counter.value < counter.minToShow) return null;
   return (
-    <p className="m-counter">
+    <p className={badge ? "m-counter m-counter--badge" : "m-counter"}>
       <span className="m-counter-dot" aria-hidden="true" />
       <b className="tnum">
         {counter.value}

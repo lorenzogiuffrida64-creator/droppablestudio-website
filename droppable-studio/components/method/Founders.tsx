@@ -27,10 +27,6 @@ function useFounderPrice() {
   };
 }
 
-function Stamp() {
-  return <span className="bonus-stamp">Founders only</span>;
-}
-
 function Caption({ title, subtitle, line }: { title: string; subtitle?: string; line: string }) {
   return (
     <figcaption>
@@ -75,27 +71,9 @@ function BonusObject({ b }: { b: Bonus }) {
             </span>
           </div>
         )}
-        <Stamp />
       </div>
-      <Caption title={b.title} subtitle={b.subtitle} line={b.line} />
+      <Caption title={b.title} line={b.line} />
     </figure>
-  );
-}
-
-function Yes() {
-  return (
-    <>
-      <span aria-hidden="true">✓</span>
-      <span className="sr-only">Included</span>
-    </>
-  );
-}
-function No() {
-  return (
-    <>
-      <span aria-hidden="true">✗</span>
-      <span className="sr-only">Not included</span>
-    </>
   );
 }
 
@@ -129,7 +107,8 @@ export default function Founders() {
       <div className="wrap">
         <div className="m-bonus-head">
           <h2 id="m-bonus-h">Founding members get all of it. After launch, nobody will.</h2>
-          <p>Available only with a pre-order. Removed permanently when the school opens.</p>
+          <p>Pre-order only. Gone for good when the school opens.</p>
+          <span className="founders-pill">Founders only</span>
         </div>
 
         <div className="bonus-eq bonus-eq--4">
@@ -143,7 +122,7 @@ export default function Founders() {
             </div>
             <Caption
               title="The Founders' Room"
-              line={`The full Droppable Method (${SCHOOL.lessonCount} lessons, weekly live workshops, the private operator network) at the founding rate.`}
+              line={`All ${SCHOOL.lessonCount} lessons, live workshops and the network.`}
             />
           </figure>
           <span className="eq-op eq-op--1" aria-hidden="true">+</span>
@@ -165,52 +144,17 @@ export default function Founders() {
                 </b>
                 <span className="rate-later">{launch}/mo after launch</span>
               </div>
-              <Stamp />
-            </div>
+                  </div>
             <Caption
               title="Founder's Rate"
-              line={`${today}/mo today, locked for as long as you stay. After launch: ${launch}/mo.`}
+              line="Locked for as long as you stay."
             />
           </figure>
         </div>
 
-        <table className="ftable">
-          <caption className="sr-only">What founding members get compared with joining after launch</caption>
-          <thead>
-            <tr>
-              <td />
-              <th scope="col" className="ftable-us">Founding member</th>
-              <th scope="col">After launch</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">The Droppable Method</th>
-              <td className="ftable-us"><Yes /></td>
-              <td><Yes /></td>
-            </tr>
-            <tr>
-              <th scope="row">Monthly price</th>
-              <td className="ftable-us tnum">{today}, locked</td>
-              <td className="tnum">{launch}</td>
-            </tr>
-            <tr>
-              <th scope="row">{codex.title}</th>
-              <td className="ftable-us"><Yes /></td>
-              <td className="ftable-no"><No /></td>
-            </tr>
-            <tr>
-              <th scope="row">{decoder.title}</th>
-              <td className="ftable-us"><Yes /></td>
-              <td className="ftable-no"><No /></td>
-            </tr>
-          </tbody>
-        </table>
-
         <div className="fclose">
           <p>
-            {SCHOOL.lessonCount} lessons, the Codex, the Decoder, and the Founder&apos;s Rate.{" "}
-            <b className="tnum">{today}/mo, today only.</b>
+            All four for <b className="tnum">{today}/mo</b>, today only.
           </p>
           <button
             type="button"

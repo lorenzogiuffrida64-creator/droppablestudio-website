@@ -1817,3 +1817,57 @@ footer :focus-visible{outline-color:var(--sage)}
 }
 /* the empty corner cell sets the label column's width — keep it flexible */
 .ftable thead td:first-child{width:auto}
+
+/* hero CTA + the "150+ already pre-ordered" badge on its bottom-right corner */
+.m-cta-wrap{position:relative;display:inline-flex;align-self:center;margin-bottom:14px}
+.m-counter--badge{
+  position:absolute;right:-6px;bottom:-14px;z-index:1;
+  padding:4px 10px 4px 8px;gap:6px;font-size:11px;white-space:nowrap;
+  background:var(--sage-bright);box-shadow:0 6px 16px -8px rgba(27,44,64,.55);
+  pointer-events:none;
+}
+.m-counter--badge .m-counter-dot{width:6px;height:6px}
+.m-counter--badge .m-counter-dot::after{inset:-3px}
+/* without the table the closing line needs its own breathing room */
+.m-bonus .fclose{margin-top:clamp(40px,6vh,60px)}
+@media (max-width:640px){
+  .m-cta-wrap{align-self:stretch;order:2} /* ladder first, then the button */
+  .m-counter--badge{font-size:10px;padding:3px 9px 3px 7px}
+  .m-cta-wrap .m-cta{width:100%;justify-content:center}
+  .m-counter--badge{right:10px}
+}
+
+/* founders section — streamlined: one "founders only" pill, short captions */
+.founders-pill{
+  display:inline-flex;align-items:center;padding:7px 14px;border-radius:999px;
+  background:var(--blu);color:var(--sage-bright);
+  font-weight:800;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+}
+.m-bonus .m-bonus-head{gap:14px}
+.bonus-eq--4 figcaption span{font-size:14px}
+
+/* phones: a clean 2 × 2 of square cards, no "+" signs */
+@media (max-width:860px){
+  .bonus-eq--4{
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:"seat pdf" "seatc pdfc" "sheets rate" "sheetsc ratec";
+    column-gap:12px;row-gap:8px;
+  }
+  .bonus-eq--4 .eq-op{display:none}
+  .bonus-eq--4 .bonus-art,.bonus-eq--4 .seat{aspect-ratio:1/1;margin-top:0 !important}
+  .bonus-eq--4 .bonus--sheets .bonus-art,.bonus-eq--4 .bonus--rate .bonus-art{margin-top:14px !important}
+  .bonus-eq--4 figcaption{margin-bottom:6px}
+  .bonus-eq--4 figcaption b{font-size:15px}
+  .bonus-eq--4 figcaption span{font-size:12.5px;line-height:1.4}
+  /* tighter art inside square cards */
+  .bonus-eq--4 .pdf{width:46%;margin-top:0}
+  .bonus-eq--4 .pdf-cover b{font-size:30px}
+  .bonus-eq--4 .pdf-cover em{font-size:11px}
+  .bonus-eq--4 .sheet{width:80%;margin-top:0}
+  .bonus-eq--4 .seat-k{display:none}
+  .bonus-eq--4 .seat-name{font-size:18px}
+  .bonus-eq--4 .rate-now{font-size:40px}
+  .bonus-eq--4 .rate-later{font-size:10.5px;padding-top:8px;margin-top:4px}
+  .m-bonus .m-bonus-head p{font-size:15px}
+}
+.m-bonus .m-bonus-head p{text-wrap:balance}
