@@ -197,7 +197,7 @@ export function SeatButton({
         goToCheckout();
       }}
     >
-      {short ? "Lock my seat" : `Lock my seat forever for just ${formatMonthly(price.cents)}`}
+      {short ? "Lock my seat" : `Lock my price at just ${formatMonthly(price.cents)}`}
     </a>
   );
 }

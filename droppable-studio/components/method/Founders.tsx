@@ -147,7 +147,7 @@ export default function Founders() {
                   </div>
             <Caption
               title="Founder's Rate"
-              line="Locked for as long as you stay."
+              line="Locked as long as you stay subscribed."
             />
           </figure>
         </div>

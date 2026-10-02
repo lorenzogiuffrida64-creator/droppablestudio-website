@@ -65,10 +65,11 @@ export default async function PreorderSuccessPage({
               <p>
                 {cents != null ? (
                   <>
-                    Your founding price of <b>{formatPrice(cents)}</b> is locked.
+                    Your founding price of <b>{formatPrice(cents)}</b> is locked for as
+                    long as you stay subscribed.
                   </>
                 ) : (
-                  <>Your founding seat is reserved and your price is locked.</>
+                  <>Your founding seat is reserved and your price is locked for as long as you stay subscribed.</>
                 )}{" "}
                 Check your inbox for the confirmation. The Droppable Method
                 opens {opens} (CET), and we&apos;ll email you your

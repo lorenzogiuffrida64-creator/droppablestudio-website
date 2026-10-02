@@ -167,9 +167,10 @@ export const METHOD = {
     ] as TestimonialChat[],
   },
 
-  /* what founding members keep after launch — depends on input #1
-     (monthly price locked forever vs one-time payment) */
-  foundingKeeps: null as null | string,
+  /* what founding members keep after launch: the monthly price is held by the
+     Skool subscription itself, so it lasts only while that subscription does */
+  foundingKeeps:
+    "Your founding price stays locked as long as you stay subscribed. If you cancel and come back later, you rejoin at the price of that day." as null | string,
 
   /* school FAQ — Lorenzo's copy (2026-09-30) */
   faq: [
@@ -199,6 +200,11 @@ export const METHOD = {
       a: `Because we're building a premium space, not a crowd. A €7 community with 30,000 members never feels like a real community. At ${formatPrice(
         PREORDER.launchPriceCents
       )}, everyone inside has invested in being there, which means they show up, share what's working, and push each other forward. The price protects the quality of the room you're paying to be in.`,
+    },
+    {
+      id: "price-lock",
+      q: "Is my founding price locked forever?",
+      a: "It's locked for as long as you stay subscribed. Your price is tied to your Skool subscription, so as long as it stays active you'll keep paying your founding price, even when the price goes up for new members. If you cancel, the subscription ends and so does the founding price. Rejoining later means joining at the current price, because Skool can't bring back an old one.",
     },
     {
       id: "works",
