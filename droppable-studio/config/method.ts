@@ -59,7 +59,8 @@ export type TestimonialChat = {
   full?: boolean;
 };
 
-export type Mentor = { name: string; role: string; photo: string; focus: string };
+/* no photo = a guest still under wraps: abstract blurred card, no role chip */
+export type Mentor = { name: string; role?: string; photo?: string; focus?: string };
 
 export type ClassroomShot = {
   src: string;
@@ -141,12 +142,7 @@ export const METHOD = {
       /* where the face sits, so the crop keeps it on narrow screens */
       focus: "55% 40%",
     },
-    {
-      name: "Michael Alfred",
-      role: "Operational systems",
-      photo: "/method/mentors/michael",
-      focus: "42% 45%",
-    },
+    { name: "Special guest" },
   ] as Mentor[],
 
   /* testimonials — real call clips (audio kept; Alisa's cropped to the two

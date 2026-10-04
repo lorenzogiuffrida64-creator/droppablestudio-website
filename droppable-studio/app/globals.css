@@ -1414,6 +1414,13 @@ footer :focus-visible{outline-color:var(--sage)}
   content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg, rgba(27,44,64,0) 52%, rgba(27,44,64,.55) 76%, rgba(27,44,64,.92) 100%);
 }
+/* special guest — abstract, out-of-focus blu/sage shapes in place of a portrait */
+.mentor-veil{position:absolute;inset:-12%;background:var(--blu);filter:blur(42px);transition:transform 1.2s var(--ease)}
+.mentor:hover .mentor-veil{transform:scale(1.03)}
+.mentor-veil i{position:absolute;border-radius:50%}
+.mentor-veil i:nth-child(1){width:62%;height:52%;left:8%;top:10%;background:var(--sage);opacity:.75}
+.mentor-veil i:nth-child(2){width:48%;height:58%;right:4%;top:34%;background:var(--sage-bright);opacity:.45}
+.mentor-veil i:nth-child(3){width:70%;height:40%;left:18%;bottom:6%;background:var(--blu-ink);opacity:.9}
 .mentor-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:clamp(22px,3vw,34px);display:flex;flex-direction:column;gap:8px}
 .mentor-role{
   align-self:flex-start;padding:6px 12px;border-radius:999px;

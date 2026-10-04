@@ -143,19 +143,25 @@ export function Founder() {
         <ul className="mentors">
           {mentors.map((m) => (
             <li className="mentor" key={m.name}>
-              <img
-                src={`${m.photo}-1000.webp`}
-                srcSet={`${m.photo}-600.webp 600w, ${m.photo}-1000.webp 1000w`}
-                sizes="(max-width: 860px) 92vw, 540px"
-                width={1000}
-                height={1250}
-                alt={`${m.name}, ${m.role}`}
-                loading="lazy"
-                decoding="async"
-                style={{ objectPosition: m.focus }}
-              />
+              {m.photo ? (
+                <img
+                  src={`${m.photo}-1000.webp`}
+                  srcSet={`${m.photo}-600.webp 600w, ${m.photo}-1000.webp 1000w`}
+                  sizes="(max-width: 860px) 92vw, 540px"
+                  width={1000}
+                  height={1250}
+                  alt={m.role ? `${m.name}, ${m.role}` : m.name}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ objectPosition: m.focus }}
+                />
+              ) : (
+                <div className="mentor-veil" aria-hidden="true">
+                  <i /><i /><i />
+                </div>
+              )}
               <div className="mentor-cap">
-                <span className="mentor-role">{m.role}</span>
+                {m.role && <span className="mentor-role">{m.role}</span>}
                 <b className="mentor-name">{m.name}</b>
               </div>
             </li>
