@@ -3,6 +3,9 @@ import { LINKS } from "@/config/links";
 import { PreorderRibbon, PreorderPriceLine } from "@/components/PreorderClock";
 import { SCHOOL } from "@/config/method";
 
+// Discord card temporarily hidden — flip to true to bring it back.
+const SHOW_DISCORD = false;
+
 export default function Academy() {
   return (
     <section className="academy" id="academy">
@@ -20,7 +23,8 @@ export default function Academy() {
             </p>
           </div>
 
-          <div className="paths">
+          <div className={SHOW_DISCORD ? "paths" : "paths solo"}>
+            {SHOW_DISCORD && (
             <div className="path-card rv">
               <span className="tier">
                 Discord — <b>Free</b>
@@ -40,6 +44,7 @@ export default function Academy() {
                 Join free <span className="arr">→</span>
               </a>
             </div>
+            )}
 
             <div className="path-card featured rv d1">
               <PreorderRibbon />
