@@ -2,11 +2,14 @@ import Link from "next/link";
 import { LINKS } from "@/config/links";
 import { PreorderRibbon, PreorderPriceLine } from "@/components/PreorderClock";
 import { SCHOOL } from "@/config/method";
+import { DISCORD, getDiscordMemberCount } from "@/lib/discord";
 
-// Discord card temporarily hidden — flip to true to bring it back.
-const SHOW_DISCORD = false;
+export default async function Academy() {
+  const members = await getDiscordMemberCount();
+  const spotsLeft =
+    members === null ? null : Math.max(DISCORD.freeSpots - members, 0);
+  const fmt = (n: number) => n.toLocaleString("en-US");
 
-export default function Academy() {
   return (
     <section className="academy" id="academy">
       <div className="wrap">
@@ -23,18 +26,44 @@ export default function Academy() {
             </p>
           </div>
 
-          <div className={SHOW_DISCORD ? "paths" : "paths solo"}>
-            {SHOW_DISCORD && (
+          <div className="paths">
             <div className="path-card rv">
               <span className="tier">
                 Discord — <b>Free</b>
               </span>
               <h3>The Community</h3>
+              <p className="path-lede">
+                Our 600-member server was hacked. We&rsquo;re starting over.
+              </p>
               <ul>
                 <li>Monthly drops: Claude Code guides, skills &amp; breakdowns</li>
                 <li>Beginner roadmap to generative AI</li>
-                <li>Share your work, get feedback — a 560+ community</li>
+                <li>Share your work, get feedback</li>
               </ul>
+              <div className="spots">
+                <p className="spots-line">
+                  {spotsLeft === null ? (
+                    <>First <b>{fmt(DISCORD.freeSpots)}</b> members join free</>
+                  ) : spotsLeft > 0 ? (
+                    <><b>{fmt(spotsLeft)}</b> of {fmt(DISCORD.freeSpots)} free spots left</>
+                  ) : (
+                    <>Free spots are gone</>
+                  )}
+                </p>
+                {spotsLeft !== null && (
+                  <div className="spots-bar" aria-hidden="true">
+                    <span
+                      style={{
+                        transform: `scaleX(${(DISCORD.freeSpots - spotsLeft) / DISCORD.freeSpots})`,
+                      }}
+                    />
+                  </div>
+                )}
+                <p className="spots-note">
+                  Then {DISCORD.entryFee} entry.
+                  {members !== null && <> {fmt(members)} members and counting.</>}
+                </p>
+              </div>
               <a
                 className="btn ghost"
                 href={LINKS.discord}
@@ -44,7 +73,6 @@ export default function Academy() {
                 Join free <span className="arr">→</span>
               </a>
             </div>
-            )}
 
             <div className="path-card featured rv d1">
               <PreorderRibbon />

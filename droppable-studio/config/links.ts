@@ -12,6 +12,6 @@ export const LINKS = {
   preorder: "/preorder",
   /* 1:1 strategy call — embedded as a step in the inquiry form */
   calendly: "https://calendly.com/droppablestudio/1-1-strategycall",
-  discord: "https://discord.gg/rs5eATyJ7W",
+  discord: "https://discord.gg/UXSFf7t7Zd",
   skool: "https://www.skool.com/droppablestudio-ai-school-7941/about",
 } as const;
