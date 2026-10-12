@@ -27,7 +27,7 @@ const BUDGETS = ["400-1.5k$", "1.5k-5k$", "5k-20k$", "20k-50k$"];
    notification (app/api/inquiry/route.ts) reproduces the brief in order.
    The sequence is a deliberate climb: frictionless entry → self-persuasion →
    future-pacing → qualification → the "why us" peak, contact asked late. */
-type Step =
+type Step = (
   | {
       kind: "choice";
       name: string;
@@ -48,12 +48,16 @@ type Step =
       required: boolean;
     }
   | { kind: "contact"; q: ReactNode }
-  | { kind: "call"; q: ReactNode };
+  | { kind: "call"; q: ReactNode }
+) & {
+  /* kept in the sequence but not shown — flip off to bring the step back */
+  hidden?: boolean;
+};
 
 /* the 1–10 scales render as compact wrapping chips */
 const SCALE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
-const STEPS: Step[] = [
+const ALL_STEPS: Step[] = [
   {
     kind: "choice",
     name: "Industry",
@@ -163,6 +167,8 @@ const STEPS: Step[] = [
     variant: "chips",
     options: BUDGETS,
     required: true,
+    /* prices off the form for the moment */
+    hidden: true,
   },
   {
     kind: "choice",
@@ -206,6 +212,8 @@ const STEPS: Step[] = [
     ),
   },
 ];
+
+const STEPS = ALL_STEPS.filter((s) => !s.hidden);
 
 const CONTACT_REQUIRED = [
   "First Name",

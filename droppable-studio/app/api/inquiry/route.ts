@@ -53,7 +53,7 @@ const REQUIRED = [
   "What they've already tried, and why it didn't work",
   "Urgency (1–10)",
   "Why AI, and why now?",
-  "What they're prepared to invest",
+  /* budget step hidden in the form for now (InquiryForm.tsx) — re-add with it */
   "When are you ready to start?",
   "Why Droppable specifically?",
 ];
