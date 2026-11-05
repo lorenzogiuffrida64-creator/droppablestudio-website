@@ -1,6 +1,6 @@
 /* Phone dialing codes — single source of truth, used by the shared
-   <CountryCodeField> (components/CountryCodeField.tsx) inside both
-   PreorderForm and InquiryForm.
+   <CountryCodeField> (components/CountryCodeField.tsx) inside
+   InquiryForm.
 
    The prefix is a free-type field (no dropdown): the user types their dialing
    code and the matching flag appears live. This means NO client is ever

@@ -22,6 +22,7 @@ export const runtime = "nodejs";
 /* email layout order — follows the new progressive form (InquiryForm.tsx):
    the brief reads as the climb, contact block first for quick reply */
 const FIELD_ORDER = [
+  "Inquiry type",
   "First Name",
   "Last Name",
   "Email",
@@ -232,7 +233,10 @@ export async function POST(req: Request) {
         from,
         to,
         reply_to: email,
-        subject: "✅NEW DROPPABLE STUDIO INQUIRE✅",
+        subject:
+          get("Inquiry type") && get("Inquiry type") !== "Brand project"
+            ? `✅NEW DROPPABLE ${get("Inquiry type").toUpperCase()}✅`
+            : "✅NEW DROPPABLE STUDIO INQUIRE✅",
         text,
         html,
       }),

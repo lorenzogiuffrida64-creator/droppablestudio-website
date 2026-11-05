@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { REELS_VERSION, type WorkItem } from "@/config/work";
-import type { ClassroomShot, TestimonialClip } from "@/config/method";
+import type { ClassroomCard, TestimonialClip } from "@/config/school-page";
 import { track } from "@/lib/track";
-import { goToCheckout } from "@/components/method/Pricing";
 
 const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -154,7 +153,7 @@ export function ProofReel({ items }: { items: WorkItem[] }) {
   }, []);
 
   return (
-    <div className="m-reel" ref={railRef} tabIndex={0} aria-label="Studio reels — scroll sideways">
+    <div className="m-reel" ref={railRef} tabIndex={0} aria-label="Studio reels, scroll sideways">
       {items.map((item) => (
         <div
           className="m-reel-item"
@@ -178,9 +177,10 @@ export function ProofReel({ items }: { items: WorkItem[] }) {
 
 /* ---------- 5.6 look inside the classroom ----------
    Real Skool screenshots, cropped to the lesson column so titles stay legible
-   on a phone. Modules still being written are blurred and locked. A full-bleed scroll-snap rail: swipe / trackpad / arrow keys, or
+   on a phone. Cards without a screenshot (the Vault, phases still to be
+   shot) are text cards. A full-bleed scroll-snap rail: swipe / trackpad / arrow keys, or
    the prev-next buttons; counter + progress bar track the card in view. */
-export function ClassroomCarousel({ shots }: { shots: ClassroomShot[] }) {
+export function ClassroomCarousel({ shots }: { shots: ClassroomCard[] }) {
   const railRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -242,59 +242,37 @@ export function ClassroomCarousel({ shots }: { shots: ClassroomShot[] }) {
         ref={railRef}
         tabIndex={0}
         role="region"
-        aria-label="Classroom screenshots — scroll sideways"
+        aria-label="Classroom screenshots, scroll sideways"
       >
         {shots.map((s, i) => (
           <figure
-            className={`cls-card${i === active ? " is-active" : ""}${s.locked ? " is-locked" : ""}`}
-            key={s.src}
+            className={`cls-card${i === active ? " is-active" : ""}`}
+            key={`${s.label}-${s.title}`}
           >
-            {s.locked ? (
-              /* locked: blur is baked into the file; the whole card leads to checkout */
-              <a
-                className="cls-frame"
-                href="#checkout"
-                aria-label={`${s.title} is locked. ${s.teaser ? `${s.teaser} ` : ""}Pre-order to discover it.`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  track("locked_class_click", { title: s.title });
-                  goToCheckout();
-                }}
-              >
-                <img
-                  src={s.src}
-                  width={320}
-                  height={774}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                />
-                <span className="cls-locked-body">
-                  <span className="cls-locked-mid">
-                    <span className="cls-lock-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24">
-                        <rect x="5" y="10.5" width="14" height="10" rx="2.5" />
-                        <path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" />
-                        <path d="M12 14.6v2.2" />
-                      </svg>
-                    </span>
-                    {s.teaser && <span className="cls-hook">{s.teaser}</span>}
-                  </span>
-                  <span className="cls-unlock">Pre-order to discover</span>
-                </span>
-              </a>
-            ) : (
+            {s.src ? (
               <div className="cls-frame">
                 <img
                   src={s.src}
                   width={640}
                   height={1546}
-                  alt={`${s.label}: ${s.title} — lesson list in the Skool classroom`}
+                  alt={`${s.label}: ${s.title}, lesson list in the Skool classroom`}
                   loading={i < 2 ? "eager" : "lazy"}
                   decoding="async"
                   draggable={false}
                 />
+              </div>
+            ) : (
+              <div className="cls-frame cls-text">
+                <img src="/logo-sage.png" alt="" aria-hidden="true" className="cls-text-mark" />
+                <b>{s.title}</b>
+                {s.line && <p>{s.line}</p>}
+                {s.items && (
+                  <ul>
+                    {s.items.map((it) => (
+                      <li key={it}>{it}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
             <figcaption>
@@ -363,7 +341,7 @@ export function TestimonialReel({ clips }: { clips: TestimonialClip[] }) {
   };
 
   return (
-    <div className="m-reel m-reel--testi" ref={railRef} tabIndex={0} aria-label="Student call clips — scroll sideways">
+    <div className="m-reel m-reel--testi" ref={railRef} tabIndex={0} aria-label="Student call clips, scroll sideways">
       {clips.map((c, i) => (
         <div className="m-reel-item" key={c.src} style={{ ["--ar" as string]: c.aspect }}>
           <video

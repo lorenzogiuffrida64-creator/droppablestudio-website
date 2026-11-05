@@ -15,6 +15,7 @@ import Marquee from "@/components/Marquee";
 import ReelCarousel from "@/components/ReelCarousel";
 import { LINKS } from "@/config/links";
 import { WORK } from "@/config/work";
+import { INQUIRY_TYPES, type InquiryType } from "@/config/inquiry";
 
 /* the welcome screen's proof: every live reel, then the brands behind them */
 const SHOWCASE = WORK.filter((w) => Boolean(w.video));
@@ -235,9 +236,11 @@ const STEPS_NO_CALL = STEPS.filter((s) => s.kind !== "call");
 
 export default function InquiryForm({
   callBooked = false,
+  type,
 }: {
   /* the call was booked outside this form, so skip the Calendly step */
   callBooked?: boolean;
+  type?: InquiryType;
 } = {}) {
   const steps = callBooked ? STEPS_NO_CALL : STEPS;
   const [started, setStarted] = useState(false);
@@ -370,6 +373,7 @@ export default function InquiryForm({
        notification reads "Phone Number: +39 328 827 3008" */
     const payload: Answers = {
       ...answers,
+      "Inquiry type": type ? INQUIRY_TYPES[type] : "Brand project",
       "Strategy call": booked
         ? "Booked via Calendly"
         : callBooked

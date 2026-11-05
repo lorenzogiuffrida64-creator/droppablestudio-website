@@ -2,27 +2,37 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ApplyForm from "@/components/ApplyForm";
 import ReelCarousel from "@/components/ReelCarousel";
+import {
+  ApplyHero,
+  ApplySteps,
+  QuestionParts,
+} from "@/components/hiring/Sections";
+import StickyLoomCta from "@/components/hiring/StickyLoomCta";
 import { WORK, type WorkItem } from "@/config/work";
 
 /* Hidden hiring page — reached only by a link we send personally.
    noindex keeps it out of search; it is linked from nowhere on the site. */
 export const metadata: Metadata = {
-  title: "Join the studio — Droppable Studio",
+  title: "AI Artist application — Droppable Studio",
   description:
-    "Apply to join Droppable Studio. Show us the work — if it moves us, we reply on WhatsApp within 72 hours.",
+    "Apply to join Droppable Studio as an AI Artist: record one Loom video answering our questions, then submit the link.",
   robots: { index: false, follow: false },
 };
 
-/* the bar we hold applicants to — four studio reels */
-const LEVEL_VIDEOS = [
+/* the bar we hold applicants to — every studio reel on the site, led by these four */
+const LEAD_VIDEOS = [
   "/reels/reel-dji.mp4",
   "/reels/rolex.mp4",
   "/reels/reel-6.mp4",
   "/reels/reel-0507.mp4",
 ];
-const LEVEL: WorkItem[] = LEVEL_VIDEOS.map(
-  (v) => WORK.find((w) => w.video === v)
-).filter((w): w is WorkItem => Boolean(w));
+const REELS = WORK.filter((w) => Boolean(w.video));
+const LEVEL: WorkItem[] = [
+  ...LEAD_VIDEOS.map((v) => REELS.find((w) => w.video === v)).filter(
+    (w): w is WorkItem => Boolean(w)
+  ),
+  ...REELS.filter((w) => !LEAD_VIDEOS.includes(w.video ?? "")),
+];
 
 export default function ApplyPage() {
   return (
@@ -40,7 +50,10 @@ export default function ApplyPage() {
         </Link>
       </header>
 
-      <main>
+      <main className="hq-main">
+        <ApplyHero />
+        <ApplySteps />
+        <QuestionParts />
         <ApplyForm />
 
         <section className="dark level">
@@ -49,14 +62,13 @@ export default function ApplyPage() {
               This is <em>the level.</em>
             </h2>
           </div>
-          {/* the set is small, so each reel appears twice per list — one list
-              must outsize the viewport for the loop wrap to stay seamless */}
-          <ReelCarousel items={[...LEVEL, ...LEVEL]} />
+          <ReelCarousel items={LEVEL} />
           <div className="wrap">
             <p className="apply-setbar">Set the bar</p>
           </div>
         </section>
       </main>
+      <StickyLoomCta />
     </>
   );
 }

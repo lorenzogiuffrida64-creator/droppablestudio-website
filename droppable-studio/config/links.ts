@@ -8,8 +8,8 @@ export const LINKS = {
   youtube: "https://youtube.com/@droppablestudio?si=1IrEH2GTRg_XjA-O",
   /* internal custom inquiry form (replaces the external Youform link) */
   inquiry: "/inquiry",
-  /* internal pre-order flow for the Skool community (under construction) */
-  preorder: "/preorder",
+  /* the school sales page; its buttons are the only way into the Skool */
+  school: "/school",
   /* 1:1 strategy call — embedded as a step in the inquiry form */
   calendly: "https://calendly.com/droppablestudio/1-1-strategycall",
   discord: "https://discord.gg/UXSFf7t7Zd",

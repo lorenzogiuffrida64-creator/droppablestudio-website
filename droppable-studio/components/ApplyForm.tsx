@@ -1,51 +1,47 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-
-/* ---------- skill sliders — 0 = never touched, 10 = you teach it ---------- */
-const SKILLS: { key: string; tag?: string; desc?: string }[] = [
-  {
-    key: "AI creation",
-    tag: "Show us",
-    desc: "Prompting, agents, generative pipelines. If you rate yourself here, link visuals below.",
-  },
-  { key: "Motion design" },
-  { key: "Kinetic text animation" },
-  { key: "Graphic design" },
-  { key: "Visual taste & direction" },
-  { key: "Editing" },
-];
-
-const ABOUT_MAX = 500;
+import CountryPicker from "@/components/CountryPicker";
+import { isValidDialCode } from "@/config/countryCodes";
+import { QUESTION_COUNT } from "@/config/hiring-questions";
+import { normalizeLoomUrl } from "@/lib/loom";
 
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+
+const LOOM_ERROR = "Not a Loom link — use loom.com/share/… or loom.com/embed/…";
+const loomError = (v: string) =>
+  !v.trim() ? "Required" : normalizeLoomUrl(v) ? "" : LOOM_ERROR;
 
 type Status = "idle" | "submitting" | "done" | "error";
 type Errors = Record<string, string>;
 
 export default function ApplyForm() {
+  const [loom, setLoom] = useState("");
+  const [loomTouched, setLoomTouched] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsappCode, setWhatsappCode] = useState("+39");
   const [whatsapp, setWhatsapp] = useState("");
-  const [skills, setSkills] = useState<Record<string, number>>(
-    Object.fromEntries(SKILLS.map((s) => [s.key, 0]))
-  );
-  const [instagram, setInstagram] = useState("");
-  const [projectLink, setProjectLink] = useState("");
-  const [about, setAbout] = useState("");
   const [gotcha, setGotcha] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
 
+  // the form sits at the bottom of a long page — bring the confirmation into view
+  useEffect(() => {
+    if (status === "done")
+      document.getElementById("submit")?.scrollIntoView({ block: "start" });
+  }, [status]);
+
   function validate(): Errors {
     const e: Errors = {};
+    const le = loomError(loom);
+    if (le) e["Loom video link"] = le;
     if (!fullName.trim()) e["Full name"] = "Required";
     if (!email.trim()) e["Email"] = "Required";
     else if (!isEmail(email.trim())) e["Email"] = "Enter a valid email";
+    if (!isValidDialCode(whatsappCode)) e["WhatsApp code"] = "Choose your country";
     if (!whatsapp.trim()) e["WhatsApp"] = "Required";
-    if (!projectLink.trim()) e["Best project link"] = "Required";
-    if (!about.trim()) e["About"] = "Required";
     return e;
   }
 
@@ -53,24 +49,31 @@ export default function ApplyForm() {
     ev.preventDefault();
     const e = validate();
     setErrors(e);
-    if (Object.values(e).some(Boolean)) return;
+    setLoomTouched(true);
+    if (Object.values(e).some(Boolean)) {
+      // jump to the first problem so it can't be missed below the fold
+      // (next frame — the error state has to render first)
+      requestAnimationFrame(() =>
+        document
+          .querySelector<HTMLElement>("#submit [aria-invalid='true']")
+          ?.focus()
+      );
+      return;
+    }
 
     setStatus("submitting");
     const fd = new FormData();
+    fd.append("Loom video link", normalizeLoomUrl(loom) ?? loom.trim());
     fd.append("Full name", fullName.trim());
     fd.append("Email", email.trim());
-    fd.append("WhatsApp", whatsapp.trim());
-    for (const s of SKILLS) fd.append(s.key, `${skills[s.key]} / 10`);
-    fd.append("Instagram", instagram.trim());
-    fd.append("Best project link", projectLink.trim());
-    fd.append("About", about.trim());
+    // one line in the email: "WhatsApp: +39 333 123 4567"
+    fd.append("WhatsApp", `${whatsappCode} ${whatsapp.trim()}`);
     fd.append("_gotcha", gotcha);
 
     try {
       const res = await fetch("/api/apply", { method: "POST", body: fd });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       setStatus("done");
-      window.scrollTo({ top: 0, behavior: "auto" });
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -79,7 +82,7 @@ export default function ApplyForm() {
 
   if (status === "done") {
     return (
-      <section className="inquiry">
+      <section className="inquiry apply-form" id="submit">
         <div className="wrap">
           <div className="inq-done">
             <img
@@ -88,12 +91,11 @@ export default function ApplyForm() {
               alt=""
               aria-hidden="true"
             />
-            <p className="eyebrow">Sent</p>
             <h2>
               Application <em>landed.</em>
             </h2>
             <p>
-              We read every application ourselves. If the work moves us, you
+              We read every application ourselves. If your Loom moves us, you
               hear from us on WhatsApp within 72 hours.
             </p>
             <Link className="btn" href="/">
@@ -106,14 +108,13 @@ export default function ApplyForm() {
   }
 
   return (
-    <section className="apply">
+    <section className="apply apply-form" id="submit" aria-labelledby="apply-title">
       <div className="wrap">
         <div className="apply-col">
           <div className="inq-intro">
-            <p className="eyebrow">Join the studio</p>
-            <h1>
-              Show us what you can <em>drop.</em>
-            </h1>
+            <h2 id="apply-title">
+              Submit your <em>Loom.</em>
+            </h2>
             <p>
               We read every application ourselves. If the work moves us, we
               ping you on WhatsApp within 72 hours.
@@ -140,6 +141,36 @@ export default function ApplyForm() {
             />
 
             <div className="apply-card">
+              {/* ---------- the Loom ---------- */}
+              <div className="apply-loom">
+                <p className="apply-label">Your Loom video</p>
+                <p className="apply-sub">
+                  One video, all {QUESTION_COUNT} questions, in order. Paste the share link.
+                </p>
+                <Field
+                  label="Loom video link"
+                  id="apply-loom"
+                  type="url"
+                  inputMode="url"
+                  value={loom}
+                  onChange={(v) => {
+                    setLoom(v);
+                    // once shown, keep the error live so it clears as they fix it
+                    if (loomTouched || errors["Loom video link"])
+                      setErrors((er) => ({ ...er, "Loom video link": loomError(v) }));
+                  }}
+                  onBlur={() => {
+                    if (!loom.trim()) return;
+                    setLoomTouched(true);
+                    setErrors((er) => ({ ...er, "Loom video link": loomError(loom) }));
+                  }}
+                  placeholder="https://www.loom.com/share/…"
+                  hint="Must be a loom.com/share/… or loom.com/embed/… link."
+                  required
+                  error={errors["Loom video link"]}
+                />
+              </div>
+
               {/* ---------- contact ---------- */}
               <Field
                 label="Full name"
@@ -160,116 +191,53 @@ export default function ApplyForm() {
                 required
                 error={errors["Email"]}
               />
-              <Field
-                label="WhatsApp"
-                id="apply-whatsapp"
-                type="tel"
-                value={whatsapp}
-                onChange={setWhatsapp}
-                placeholder="+39 333 123 4567"
-                required
-                error={errors["WhatsApp"]}
-              />
-
-              <hr className="apply-hr" />
-
-              {/* ---------- skills ---------- */}
-              <div>
-                <p className="apply-label">Your skills</p>
-                <p className="apply-sub">
-                  Rate yourself honestly. 0 = never touched. 10 = you teach it.
-                </p>
-                {SKILLS.map((s) => (
-                  <div className="skill" key={s.key}>
-                    <div className="skill-top">
-                      <span className="skill-name">
-                        {s.key}
-                        {s.tag && <b className="skill-tag">{s.tag}</b>}
-                      </span>
-                      <span className="skill-score">
-                        <b>{skills[s.key]}</b>/10
-                      </span>
-                    </div>
-                    {s.desc && <p className="skill-desc">{s.desc}</p>}
-                    <input
-                      type="range"
-                      className="skill-range"
-                      min={0}
-                      max={10}
-                      step={1}
-                      value={skills[s.key]}
-                      aria-label={`${s.key} — rate yourself 0 to 10`}
-                      style={
-                        { "--fill": `${skills[s.key] * 10}%` } as CSSProperties
-                      }
-                      onChange={(e) =>
-                        setSkills((sk) => ({
-                          ...sk,
-                          [s.key]: Number(e.target.value),
-                        }))
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <hr className="apply-hr" />
-
-              {/* ---------- show your work ---------- */}
-              <div>
-                <p className="apply-label">Show your work</p>
-                <div className="apply-work">
-                  <Field
-                    label="Instagram"
-                    id="apply-instagram"
-                    value={instagram}
-                    onChange={setInstagram}
-                    placeholder="@yourhandle"
-                    hint="Optional if you drop a project link below."
-                  />
-                  <Field
-                    label="Best project link"
-                    id="apply-link"
-                    type="url"
-                    value={projectLink}
-                    onChange={setProjectLink}
-                    placeholder="https://drive.google.com/… or vimeo.com/…"
-                    hint="Drive, Vimeo, YouTube, WeTransfer, portfolio. Anything."
-                    required
-                    error={errors["Best project link"]}
-                  />
-                </div>
-              </div>
-
-              <hr className="apply-hr" />
-
-              {/* ---------- about ---------- */}
-              <div className={`field${errors["About"] ? " invalid" : ""}`}>
-                <label htmlFor="apply-about">
-                  A quick word about you
+              {/* country code (picked from a panel) + number */}
+              <div
+                className={`field${
+                  errors["WhatsApp"] || errors["WhatsApp code"] ? " invalid" : ""
+                }`}
+              >
+                <label htmlFor="apply-whatsapp">
+                  WhatsApp
                   <span className="req" aria-hidden="true">
                     *
                   </span>
                 </label>
-                <textarea
-                  id="apply-about"
-                  rows={4}
-                  maxLength={ABOUT_MAX}
-                  placeholder="What do you make? What tools? What excites you?"
-                  value={about}
-                  aria-required
-                  aria-invalid={errors["About"] ? true : undefined}
-                  aria-describedby={errors["About"] ? "apply-about-err" : undefined}
-                  onChange={(e) => setAbout(e.target.value.slice(0, ABOUT_MAX))}
-                />
-                {errors["About"] && (
-                  <span className="field-error" id="apply-about-err">
-                    {errors["About"]}
+                <div className="phone-row">
+                  <CountryPicker
+                    id="apply-whatsapp-code"
+                    value={whatsappCode}
+                    onChange={setWhatsappCode}
+                    invalid={!!errors["WhatsApp code"]}
+                    describedBy={
+                      errors["WhatsApp code"] ? "apply-whatsapp-code-err" : undefined
+                    }
+                  />
+                  <input
+                    id="apply-whatsapp"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="333 123 4567"
+                    value={whatsapp}
+                    aria-required
+                    aria-invalid={errors["WhatsApp"] ? true : undefined}
+                    aria-describedby={
+                      errors["WhatsApp"] ? "apply-whatsapp-err" : undefined
+                    }
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                  />
+                </div>
+                {errors["WhatsApp code"] && (
+                  <span className="field-error" id="apply-whatsapp-code-err">
+                    {errors["WhatsApp code"]}
                   </span>
                 )}
-                <span className="apply-count" aria-hidden="true">
-                  {about.length} / {ABOUT_MAX}
-                </span>
+                {errors["WhatsApp"] && (
+                  <span className="field-error" id="apply-whatsapp-err">
+                    {errors["WhatsApp"]}
+                  </span>
+                )}
               </div>
 
               {/* ---------- submit ---------- */}
@@ -283,7 +251,7 @@ export default function ApplyForm() {
                     "Sending…"
                   ) : (
                     <>
-                      Send my application <span className="arr">→</span>
+                      Submit application <span className="arr">→</span>
                     </>
                   )}
                 </button>
@@ -310,8 +278,10 @@ function Field({
   label,
   id,
   type = "text",
+  inputMode,
   value,
   onChange,
+  onBlur,
   placeholder,
   required,
   hint,
@@ -320,14 +290,16 @@ function Field({
   label: string;
   id: string;
   type?: string;
+  inputMode?: "url" | "email" | "tel" | "text";
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   required?: boolean;
   hint?: string;
   error?: string;
 }) {
-  const errId = error ? `${id}-err` : undefined;
+  const errId = error ? `${id}-err` : hint ? `${id}-hint` : undefined;
   return (
     <div className={`field${error ? " invalid" : ""}`}>
       <label htmlFor={id}>
@@ -341,14 +313,20 @@ function Field({
       <input
         id={id}
         type={type}
+        inputMode={inputMode}
         placeholder={placeholder}
         value={value}
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={errId}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
       />
-      {hint && !error && <span className="apply-hint">{hint}</span>}
+      {hint && !error && (
+        <span className="apply-hint" id={`${id}-hint`}>
+          {hint}
+        </span>
+      )}
       {error && (
         <span className="field-error" id={errId}>
           {error}

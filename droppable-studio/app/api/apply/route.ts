@@ -2,37 +2,34 @@
  * Hiring-application notification endpoint (/apply page).
  *
  * The form (components/ApplyForm.tsx) POSTs form-data here and we email it
- * via Resend to the same recipients as inquiries. Work samples arrive as
- * links (project link / Instagram) — no file uploads: Vercel caps a
- * function's request body at ~4.5 MB, too small for real reels.
+ * via Resend to the same recipients as inquiries. The work arrives as one
+ * Loom link (no file uploads: Vercel caps a function's request body at
+ * ~4.5 MB, too small for real video).
+ *
+ * The page asks for one Loom video answering the brief in
+ * config/hiring-questions.ts; the Loom link is checked here too, not just in
+ * the browser.
  *
  * Reuses the inquiry env vars (see .env.example):
  *   RESEND_API_KEY · INQUIRY_TO · INQUIRY_FROM
  */
 
+import { normalizeLoomUrl } from "@/lib/loom";
+
 export const runtime = "nodejs";
 
 const FIELD_ORDER = [
+  "Loom video link",
   "Full name",
   "Email",
   "WhatsApp",
-  "AI creation",
-  "Motion design",
-  "Kinetic text animation",
-  "Graphic design",
-  "Visual taste & direction",
-  "Editing",
-  "Instagram",
-  "Best project link",
-  "About",
 ];
 
 const REQUIRED = [
+  "Loom video link",
   "Full name",
   "Email",
   "WhatsApp",
-  "Best project link",
-  "About",
 ];
 
 const esc = (s: string) =>
@@ -70,9 +67,12 @@ export async function POST(req: Request) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return Response.json({ error: "Invalid email" }, { status: 400 });
   }
+  if (!normalizeLoomUrl(get("Loom video link"))) {
+    return Response.json({ error: "Invalid Loom link" }, { status: 400 });
+  }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const to = (process.env.INQUIRY_TO || "")
+  const to = (process.env.APPLY_TO || process.env.INQUIRY_TO || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
 
   if (!apiKey || to.length === 0) {
     console.error(
-      "Application email not configured: set RESEND_API_KEY and INQUIRY_TO"
+      "Application email not configured: set RESEND_API_KEY and APPLY_TO (or INQUIRY_TO)"
     );
     return Response.json({ error: "Server not configured" }, { status: 500 });
   }

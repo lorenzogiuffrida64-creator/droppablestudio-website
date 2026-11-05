@@ -197,15 +197,14 @@ export default function DropCanvas() {
   const keysRef = useRef<Key[]>(KEYS);
   const morphRef = useRef<"scroll" | "pawn">("scroll");
   const renderStaticRef = useRef<() => void>(() => {});
-  /* the pre-order, inquiry, apply, portfolio and legal pages are drop-free; the
+  /* the school, inquiry, apply, portfolio and legal pages are drop-free; the
      loop reads this each frame to pause, and the canvas is hidden outright */
   const hiddenRef = useRef(false);
 
   useEffect(() => {
     const inquiry = pathname === "/inquiry";
     const hidden =
-      pathname === "/preorder" ||
-      pathname === "/preorder/success" ||
+      pathname === "/school" ||
       pathname === "/apply" ||
       pathname === "/portfolio" || // the wheel carries the page; no WebGL on top
       pathname === "/privacy" ||
@@ -356,7 +355,7 @@ export default function DropCanvas() {
     }
 
     function frame(now: number) {
-      /* paused on the drop-free pre-order page — keep the RAF alive (so it
+      /* paused on the drop-free school page — keep the RAF alive (so it
          resumes on navigation back) but skip all work and rendering */
       if (hiddenRef.current) {
         wasOut = false; // repaint on return — the canvas may hold a stale frame

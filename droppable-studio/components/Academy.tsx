@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LINKS } from "@/config/links";
-import { PreorderRibbon, PreorderPriceLine } from "@/components/PreorderClock";
-import { SCHOOL } from "@/config/method";
+import { school, cohortLabel } from "@/config/school";
+import { INSIDE } from "@/config/school-page";
 import { DISCORD, getDiscordMemberCount } from "@/lib/discord";
 
 export default async function Academy() {
@@ -9,6 +9,8 @@ export default async function Academy() {
   const spotsLeft =
     members === null ? null : Math.max(DISCORD.freeSpots - members, 0);
   const fmt = (n: number) => n.toLocaleString("en-US");
+  /* the home page is static: the cohort line is checked at build time */
+  const cohort = cohortLabel();
 
   return (
     <section className="academy" id="academy">
@@ -21,7 +23,7 @@ export default async function Academy() {
             <p className="sub rv d2">
               For founders, creators and future agency owners: master
               generative AI, the exact tools we use, and the workflow behind
-              every Droppable campaign — from your first render to your first
+              every Droppable campaign, from your first render to your first
               client.
             </p>
           </div>
@@ -75,21 +77,32 @@ export default async function Academy() {
             </div>
 
             <div className="path-card featured rv d1">
-              <PreorderRibbon />
+              <span className="launch-bar">
+                <span className="launch-bar-label">Open</span>
+              </span>
               <span className="tier">
                 Skool — <b>The full system</b>
               </span>
               <h3>The Droppable Method</h3>
               <p className="path-lede">From 0 to hero in generative AI.</p>
               <ul>
-                <li>{SCHOOL.lessonCount} lessons</li>
-                {SCHOOL.includes.map((line) => (
+                {/* the same list as "What's inside" on /school; its first
+                    line already carries the lesson count */}
+                {INSIDE.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
               </ul>
-              <PreorderPriceLine />
-              <Link className="btn" href={LINKS.preorder}>
-                Pre-order your seat <span className="arr">→</span>
+              <p className="school-price">
+                <span className="now">{school.priceMonthly}</span>
+                <span className="then">/month · cancel anytime</span>
+              </p>
+              {cohort && (
+                <p className="school-cohort">
+                  Next 7-Day Challenge: <b>{cohort}</b>
+                </p>
+              )}
+              <Link className="btn" href={LINKS.school}>
+                See the school <span className="arr">→</span>
               </Link>
             </div>
           </div>

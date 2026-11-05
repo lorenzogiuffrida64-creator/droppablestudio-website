@@ -23,7 +23,7 @@ export default function Nav() {
       <nav className="nav-links" aria-label="Main">
         <a href="#work">Work</a>
         <a href="#why">Why AI</a>
-        <a href="#academy">Academy</a>
+        <Link href={LINKS.school}>Academy</Link>
       </nav>
       <Link className="btn" href={LINKS.inquiry}>
         Start a project
