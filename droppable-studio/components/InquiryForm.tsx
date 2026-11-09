@@ -256,6 +256,23 @@ export default function InquiryForm({
   } | null>(null);
   const booked = booking !== null;
 
+  /* sandbox: /inquiry?sandbox=1 runs the real flow (Calendly included) but
+     never POSTs the brief, and adds a bar to jump straight to the booked
+     screen — for testing without emailing the studio. "fail" fakes a
+     failed send so the retry path can be checked too. */
+  const [sandbox, setSandbox] = useState(false);
+  const sandboxFail = useRef(false);
+  useEffect(() => {
+    setSandbox(new URLSearchParams(window.location.search).has("sandbox"));
+  }, []);
+
+  function simulateBooking(fail: boolean) {
+    sandboxFail.current = fail;
+    setStarted(true);
+    setBooking({ event: "", invitee: "" });
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
   /* Calendly's own page height — its "Enter details" screen is taller than
      the date picker, so a fixed-height iframe clips it and traps scrolling */
   const [calendlyHeight, setCalendlyHeight] = useState<number | null>(null);
@@ -276,6 +293,8 @@ export default function InquiryForm({
           event: String(e.data.payload?.event?.uri ?? ""),
           invitee: String(e.data.payload?.invitee?.uri ?? ""),
         });
+        /* the Calendly embed is tall — bring the booked screen into view */
+        window.scrollTo({ top: 0, behavior: "auto" });
       }
     };
     window.addEventListener("message", onMessage);
@@ -402,6 +421,18 @@ export default function InquiryForm({
     payload["Phone Number"] = `${code} ${number}`.trim();
     delete payload["Phone Code"];
 
+    if (sandbox) {
+      console.info("[sandbox] brief not sent", payload);
+      await new Promise((r) => setTimeout(r, 900));
+      if (sandboxFail.current) {
+        sandboxFail.current = false; // the retry succeeds
+        setStatus("error");
+      } else {
+        setStatus("done");
+      }
+      return;
+    }
+
     try {
       const res = await fetch("/api/inquiry", {
         method: "POST",
@@ -416,6 +447,18 @@ export default function InquiryForm({
       setStatus("error");
     }
   }
+
+  const sandboxBar = sandbox && (
+    <div className="inq-sandbox" role="region" aria-label="Sandbox controls">
+      <span>Sandbox · nothing is sent</span>
+      <button type="button" onClick={() => simulateBooking(false)}>
+        Simulate booking
+      </button>
+      <button type="button" onClick={() => simulateBooking(true)}>
+        Booking + failed send
+      </button>
+    </div>
+  );
 
   if (!started) {
     /* one screen: the work on top, the ask in the middle, the brands below */
@@ -452,7 +495,21 @@ export default function InquiryForm({
           </div>
           <Marquee />
         </section>
+        {sandboxBar}
       </div>
+    );
+  }
+
+  /* the moment Calendly confirms a slot, the visitor lands on the booked
+     screen with Lorenzo's video — shown immediately, independent of the
+     brief's send, so a slow or failed request never hides it. /brief leads
+     (call booked elsewhere) get the same screen once their brief is in. */
+  if (booked || (callBooked && status === "done")) {
+    return (
+      <>
+        <BookedScreen status={status} onRetry={() => void submit()} />
+        {sandboxBar}
+      </>
     );
   }
 
@@ -477,6 +534,7 @@ export default function InquiryForm({
             </Link>
           </div>
         </div>
+        {sandboxBar}
       </section>
     );
   }
@@ -782,6 +840,104 @@ export default function InquiryForm({
               )}
             </div>
           </form>
+        </div>
+      </div>
+      {sandboxBar}
+    </section>
+  );
+}
+
+/* shown right after a call is booked: Lorenzo's message (captions burned
+   in). It tries to play with sound — the Calendly click usually counts as the
+   user gesture — and falls back to muted autoplay with a "tap for sound"
+   pill when the browser blocks audio. Reduced motion: no autoplay, the
+   poster + native controls wait for a tap. */
+function BookedScreen({
+  status,
+  onRetry,
+}: {
+  status: Status;
+  onRetry: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [needsSound, setNeedsSound] = useState(false);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    v.muted = false;
+    v.play().catch(() => {
+      v.muted = true;
+      setNeedsSound(true);
+      v.play().catch(() => {
+        /* autoplay fully blocked (e.g. low-power mode): poster + controls */
+      });
+    });
+  }, []);
+
+  function playWithSound() {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = false;
+    v.currentTime = 0;
+    void v.play().catch(() => {});
+    setNeedsSound(false);
+  }
+
+  return (
+    <section className="inquiry">
+      <div className="wrap">
+        <div className="inq-done inq-booked">
+          <p className="eyebrow">You&apos;re booked</p>
+          <h2>
+            One thing before <em>the call.</em>
+          </h2>
+          <p>The invite is in your inbox. Watch this first.</p>
+
+          <figure className="inq-booked-media">
+            <video
+              ref={videoRef}
+              className="inq-booked-video"
+              src="/booked/c0286.mp4"
+              poster="/booked/c0286-poster.jpg"
+              controls
+              playsInline
+              preload="auto"
+              width={1280}
+              height={720}
+              aria-label="A message from Lorenzo before your strategy call"
+              onVolumeChange={(e) => {
+                if (!e.currentTarget.muted) setNeedsSound(false);
+              }}
+            />
+            {needsSound && (
+              <button
+                type="button"
+                className="inq-booked-sound"
+                onClick={playWithSound}
+              >
+                <span aria-hidden="true">♪</span> Tap for sound
+              </button>
+            )}
+          </figure>
+
+          <p className="inq-booked-status" role="status">
+            {status === "submitting" || status === "idle"
+              ? "Sending your brief to the studio…"
+              : status === "done"
+                ? "Your brief is with the studio."
+                : "Your call is booked, but your brief didn't send."}
+          </p>
+          {status === "error" ? (
+            <button type="button" className="btn" onClick={onRetry}>
+              Send the brief again <span className="arr">→</span>
+            </button>
+          ) : (
+            <Link className="btn" href="/">
+              Back to site
+            </Link>
+          )}
         </div>
       </div>
     </section>

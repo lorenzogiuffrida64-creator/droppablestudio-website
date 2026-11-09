@@ -832,6 +832,33 @@ footer :focus-visible{outline-color:var(--sage)}
 .inq-done h2 em{font-weight:500;color:var(--blu)}
 .inq-done p{color:var(--muted);max-width:44ch;font-weight:500}
 .inq-done .btn{margin-top:18px}
+/* booked screen — the video is the hero */
+.inq-booked{min-height:0}
+.inq-booked-media{position:relative;width:100%;max-width:880px;margin:10px auto 0}
+.inq-booked-video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:22px;object-fit:cover;background:var(--blu-ink)}
+.inq-booked-sound{
+  position:absolute;top:16px;left:50%;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:0;border-radius:999px;
+  background:var(--blu);color:var(--sage);font:inherit;font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 6px 20px rgba(27,44,64,.28);
+}
+.inq-booked-sound:hover{background:var(--blu-ink)}
+.inq-booked-sound:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px}
+.inq-done .inq-booked-status{font-weight:700;font-size:11px;letter-spacing:.06em;color:var(--blu)}
+@media (max-width:640px){.inq-booked-video{border-radius:16px}.inq-booked-sound{top:10px}}
+/* /inquiry?sandbox=1 test bar */
+.inq-sandbox{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:50;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  width:max-content;max-width:calc(100vw - 32px);padding:10px 12px 10px 18px;border-radius:999px;
+  background:var(--blu-ink);color:var(--sage);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  box-shadow:0 10px 30px rgba(27,44,64,.35);
+}
+.inq-sandbox button{font:inherit;border:1px solid var(--muted-light);background:transparent;color:var(--sage-bright);padding:8px 14px;border-radius:999px;cursor:pointer}
+.inq-sandbox button:hover{background:var(--blu)}
+.inq-sandbox button:focus-visible{outline:2px solid var(--sage-bright);outline-offset:2px}
+@media (max-width:640px){.inq-sandbox{border-radius:18px;padding:10px 12px}}
 @keyframes inq-fade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
 @media (max-width:640px){
