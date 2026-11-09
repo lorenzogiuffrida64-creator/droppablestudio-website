@@ -10,9 +10,9 @@ export default function Footer() {
         <div className="foot-cols">
           <div>
             <h4 className="serif">Studio</h4>
-            <a href="#work">Work</a>
-            <a href="#why">Why AI</a>
-            <a href="#faq">FAQ</a>
+            <a href="/#work">Work</a>
+            <a href="/#why">Why AI</a>
+            <a href="/#faq">FAQ</a>
             <Link href={LINKS.inquiry}>Start a project</Link>
           </div>
           <div>

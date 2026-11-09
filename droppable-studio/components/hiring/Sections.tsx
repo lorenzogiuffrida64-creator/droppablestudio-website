@@ -26,6 +26,20 @@ export function ApplyHero() {
             ↓
           </span>
         </a>
+        {/* intro from Lorenzo — captions are burned in; sound on, so it waits for a tap */}
+        <figure className="hq-intro">
+          <video
+            className="hq-intro-video"
+            src="/apply/c0287.mp4"
+            poster="/apply/c0287-poster.jpg"
+            controls
+            playsInline
+            preload="metadata"
+            width={1280}
+            height={720}
+            aria-label="Lorenzo on joining the Droppable Studio team"
+          />
+        </figure>
       </div>
     </section>
   );

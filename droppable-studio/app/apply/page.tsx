@@ -8,6 +8,8 @@ import {
   QuestionParts,
 } from "@/components/hiring/Sections";
 import StickyLoomCta from "@/components/hiring/StickyLoomCta";
+import Footer from "@/components/Footer";
+import Reveals from "@/components/Reveals";
 import { WORK, type WorkItem } from "@/config/work";
 
 /* Hidden hiring page — reached only by a link we send personally.
@@ -68,7 +70,9 @@ export default function ApplyPage() {
           </div>
         </section>
       </main>
+      <Footer />
       <StickyLoomCta />
+      <Reveals />
     </>
   );
 }

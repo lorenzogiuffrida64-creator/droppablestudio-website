@@ -173,11 +173,16 @@ section{position:relative}
 
 /* ---------- dark band (work + why AI) ---------- */
 .dark{background:var(--blu);color:var(--sage);position:relative;z-index:2}
+/* home band: each section is its own blu block; a sage gap separates them */
+.dark--split{background:none}
+.dark--split > section{background:var(--blu)}
+.dark--split > section + section{margin-top:clamp(28px,4vw,56px);border-top-left-radius:46px;border-top-right-radius:46px}
+.dark--split > section:not(:last-child){border-bottom-left-radius:46px;border-bottom-right-radius:46px}
 .dark::before{content:"";position:absolute;top:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0}
 .dark::after{content:"";position:absolute;bottom:-46px;left:0;right:0;height:48px;background:var(--blu);border-radius:0}
 
 /* ---------- work ---------- */
-.work{padding:clamp(130px,18vh,210px) 0 40px}
+.work{padding:clamp(130px,18vh,210px) 0 clamp(64px,8vh,96px)}
 .work-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;margin-bottom:64px}
 .work h2, .why h2, .cta h2, .academy h2, .testi-section h2, .level h2{
   font-family:var(--font-primary);font-weight:500;
@@ -909,7 +914,7 @@ footer :focus-visible{outline-color:var(--sage)}
 .hq-col{max-width:1040px;margin:0 auto}
 /* one rhythm for the whole page: the same gap above every section, and the
    same gap between every (centred) title block and its content */
-.hq-main{--hq-sec:clamp(96px,14vh,152px);--hq-head:clamp(40px,6vh,64px)}
+.hq-main{--hq-sec:clamp(140px,20vh,220px);--hq-head:clamp(52px,7vh,84px)}
 .hq-head{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;margin-bottom:var(--hq-head)}
 
 /* hero */
@@ -925,7 +930,10 @@ footer :focus-visible{outline-color:var(--sage)}
   font-size:clamp(19px,2vw,24px);font-weight:500;line-height:1.35;letter-spacing:-0.015em;
 }
 .hq-hero-lede strong{font-weight:700;color:var(--blu-ink)}
-.hq-hero-cta{margin-top:32px}
+.hq-hero-cta{margin-top:44px}
+.hq-intro{max-width:880px;margin:clamp(56px,8vh,88px) auto 0}
+.hq-intro-video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:22px;object-fit:cover}
+@media (max-width:640px){.hq-intro{margin-top:48px}.hq-intro-video{border-radius:16px}}
 
 /* shared section type */
 .hq-section{padding:var(--hq-sec) 0 0}
@@ -1036,7 +1044,9 @@ footer :focus-visible{outline-color:var(--sage)}
 
 
 /* mobile: "Submit your Loom" always one tap away */
-.hq-main .level{padding-top:var(--hq-sec)}
+.hq-main .level{padding-top:var(--hq-sec);padding-bottom:calc(clamp(60px,8vh,90px) + 46px)}
+/* footer tucks under the band so its rounded corners sit on blu, not sage */
+.hq-main + footer{margin-top:-46px}
 .hq-main .level::before{content:none} /* band edge = section edge, so the gaps either side match */
 .hq-main .level h2{font-weight:700;font-size:clamp(36px,5vw,64px);line-height:1.02;margin-bottom:var(--hq-head)}
 .hq-sticky{display:none}
@@ -1049,22 +1059,21 @@ footer :focus-visible{outline-color:var(--sage)}
   }
   .hq-sticky.is-on{transform:none;opacity:1}
   .hq-sticky .btn{width:100%;justify-content:center}
-  .hq-main .level{padding-bottom:calc(56px + 84px)}
 }
 @media (max-width:760px){
   /* pipeline turns vertical: nodes down the left, the line between them */
-  .hq-pipe{grid-template-columns:1fr;gap:28px}
+  .hq-pipe{grid-template-columns:1fr;gap:60px}
   .hq-pipe-step{display:grid;grid-template-columns:40px 1fr;gap:4px 16px;text-align:left;justify-items:start}
   .hq-pipe-node{grid-row:1 / span 2;width:40px;height:40px;margin:0;font-size:16px}
   .hq-pipe-title{font-size:22px;align-self:center}
-  .hq-pipe-step:not(:last-child)::after{top:48px;bottom:-24px;left:20px;width:1px;height:auto}
+  .hq-pipe-step:not(:last-child)::after{top:48px;bottom:-56px;left:20px;width:1px;height:auto}
   .hq-pipe-text{margin:0}
 }
 @media (max-width:640px){
   .hq-hero{padding-top:104px}
   .hq-hero h1{font-size:clamp(46px,13.5vw,60px);max-width:10ch}
   .hq-hero-lede{font-size:20px}
-  .hq-main{--hq-sec:80px;--hq-head:36px}
+  .hq-main{--hq-sec:176px;--hq-head:60px}
   .hq-q{grid-template-columns:26px 1fr}
   .hq-q p{font-size:16px}
   .apply-form .apply-card{padding:28px 20px 32px;gap:40px}
@@ -1105,7 +1114,7 @@ footer :focus-visible{outline-color:var(--sage)}
   .manifesto{padding:110px 0}
   .manifesto-grid{gap:22px}
 
-  .work{padding:104px 0 28px}
+  .work{padding:104px 0 52px}
   .work-head{margin-bottom:40px;gap:14px}
   .work-note{margin-top:52px}
 

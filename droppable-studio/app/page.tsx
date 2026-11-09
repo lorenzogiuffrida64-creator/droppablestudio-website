@@ -20,7 +20,7 @@ export default function Home() {
       <Manifesto />
 
       {/* dark band: work + why AI */}
-      <div className="dark">
+      <div className="dark dark--split">
         <WorkGrid />
         <WhyLedger />
         {/* <Testimonials /> hidden for now */}

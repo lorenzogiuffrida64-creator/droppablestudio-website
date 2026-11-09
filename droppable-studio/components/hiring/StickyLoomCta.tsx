@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 /* Mobile-only "Submit your Loom" bar pinned to the bottom of /apply, so the
    CTA is always one tap away. It steps aside while the hero CTA or the form
-   itself (#submit) is on screen. Hidden above 860px via CSS. */
+   itself (#submit) or the footer is on screen. Hidden above 860px via CSS. */
 export default function StickyLoomCta() {
   const [show, setShow] = useState(false);
 
@@ -12,6 +12,7 @@ export default function StickyLoomCta() {
     const targets = [
       document.querySelector(".hq-hero-cta"),
       document.getElementById("submit"),
+      document.querySelector("footer"),
     ].filter((el): el is Element => Boolean(el));
     if (!targets.length) return;
 
